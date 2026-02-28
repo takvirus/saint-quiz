@@ -6,187 +6,199 @@
 <title>Bạn Giống Vị Thánh Nào? ✨</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-:root{--bg:#0d1b2a;--gold:#d4a017;--gold2:#f0c040;--text:#fff;--muted:rgba(255,255,255,.55);--card:rgba(255,255,255,.07);--r:18px}
+:root{--gold:#d4a017;--gold2:#f0c040;--bg:#0d1b2a;--text:#fff;--muted:rgba(255,255,255,.55);--card:rgba(255,255,255,.07)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(150deg,#0d1b2a,#1a2744,#0f2a1e);min-height:100vh;color:var(--text);overflow-x:hidden}
-.screen{display:none;min-height:100vh;padding:24px 16px 48px;flex-direction:column;align-items:center;justify-content:center;animation:fi .5s ease}
+.screen{display:none;min-height:100vh;padding:20px 16px 48px;flex-direction:column;align-items:center;justify-content:center;animation:fi .5s ease}
 .screen.active{display:flex}
-@keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.star{position:absolute;background:#fff;border-radius:50%;opacity:0;animation:tw var(--d) var(--dl) infinite}
-@keyframes tw{0%,100%{opacity:0}50%{opacity:.8}}
-.screen>*{position:relative;z-index:1}
-canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:999;display:none}
+@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-/* Buttons */
-.btn{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;font-weight:800;font-size:16px;border:none;border-radius:50px;padding:16px 40px;cursor:pointer;box-shadow:0 4px 24px rgba(212,160,23,.45);transition:.2s;width:100%;max-width:320px;letter-spacing:.3px}
+/* ── BUTTONS ── */
+.btn{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;font-weight:800;font-size:16px;border:none;border-radius:50px;padding:16px 40px;cursor:pointer;box-shadow:0 4px 24px rgba(212,160,23,.45);transition:.2s;width:100%;max-width:320px}
 .btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(212,160,23,.55)}
-.btn:active{transform:translateY(0)}
 .btn2{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:var(--text);font-weight:600;font-size:14px;border-radius:50px;padding:12px 28px;cursor:pointer;transition:.2s;width:100%;max-width:320px;margin-top:10px}
 .btn2:hover{border-color:rgba(255,255,255,.5)}
-.btn-dl{background:linear-gradient(135deg,#1a5276,#0e3460);color:#fff;font-weight:700;font-size:15px;border:1.5px solid rgba(100,180,255,.4);border-radius:50px;padding:14px 32px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:.2s;width:100%;max-width:320px;margin-top:10px}
-.btn-dl:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.btn-dl{background:linear-gradient(135deg,#1a3a5c,#0e2a44);color:#fff;font-weight:700;font-size:15px;border:1.5px solid rgba(100,180,255,.35);border-radius:50px;padding:14px 32px;cursor:pointer;transition:.2s;width:100%;max-width:320px;margin-top:10px}
+.btn-dl:hover{transform:translateY(-2px)}
 
-/* INTRO */
-.i-icon{font-size:80px;margin-bottom:16px;animation:fl 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(212,160,23,.5))}
-@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.i-title{font-size:30px;font-weight:800;text-align:center;line-height:1.3;margin-bottom:10px}
-.i-title span{color:var(--gold2);text-shadow:0 0 30px rgba(212,160,23,.4)}
-.i-sub{color:var(--muted);text-align:center;font-size:14px;max-width:300px;line-height:1.8;margin-bottom:28px}
+/* ══════════════════════════════════════
+   INTRO SCREEN
+══════════════════════════════════════ */
+#iScreen{position:relative;overflow:hidden;padding:0}
+.i-bg{position:absolute;inset:0;overflow:hidden;z-index:0}
+
+/* Floating saint portraits */
+.fs{position:absolute;border-radius:50%;border:2px solid rgba(212,160,23,.5);object-fit:cover;object-position:top;filter:brightness(.7) saturate(.8);box-shadow:0 0 20px rgba(212,160,23,.2);animation:fsFloat var(--dur) var(--delay) ease-in-out infinite alternate, fsFade var(--dur2) var(--delay2) ease-in-out infinite}
+@keyframes fsFloat{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-20px) scale(1.04)}}
+@keyframes fsFade{0%,100%{opacity:.18}50%{opacity:.38}}
+
+/* Particle field */
+.particle{position:absolute;border-radius:50%;background:rgba(212,160,23,.6);animation:pRise var(--pr) var(--pd) linear infinite}
+@keyframes pRise{0%{transform:translateY(0) translateX(0);opacity:.7}100%{transform:translateY(-100vh) translateX(var(--px));opacity:0}}
+
+/* Scrolling saint strip */
+.saint-strip-wrap{position:absolute;bottom:0;left:0;right:0;height:80px;overflow:hidden;mask-image:linear-gradient(90deg,transparent,black 10%,black 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,black 10%,black 90%,transparent)}
+.saint-strip{display:flex;gap:12px;animation:stripScroll 30s linear infinite;width:max-content;padding:10px 0}
+.saint-strip img{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid rgba(212,160,23,.4);flex-shrink:0;filter:brightness(.75)}
+@keyframes stripScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.i-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:40px 20px 100px;width:100%}
+.i-cross{font-size:52px;margin-bottom:16px;animation:crossGlow 3s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(212,160,23,.6))}
+@keyframes crossGlow{0%,100%{filter:drop-shadow(0 0 8px rgba(212,160,23,.4))}50%{filter:drop-shadow(0 0 24px rgba(212,160,23,.9))}}
+.i-title{font-size:28px;font-weight:900;text-align:center;line-height:1.25;margin-bottom:10px;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.i-title span{background:linear-gradient(135deg,var(--gold),var(--gold2),#fff8dc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.i-sub{color:rgba(255,255,255,.75);text-align:center;font-size:14px;max-width:280px;line-height:1.8;margin-bottom:28px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:36px}
-.chip{background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold2);border-radius:50px;padding:6px 16px;font-size:12px;font-weight:600}
-.intro-aura{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(212,160,23,.2),transparent 70%);position:absolute;animation:aura 3s ease-in-out infinite;top:50%;left:50%;transform:translate(-50%,-50%)}
-.i-icon-wrap{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.chip{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);color:var(--gold2);border-radius:50px;padding:6px 16px;font-size:12px;font-weight:600;backdrop-filter:blur(4px)}
 
-/* QUIZ */
+/* ══════════════════════════════════════
+   QUIZ SCREEN
+══════════════════════════════════════ */
 #qScreen{justify-content:flex-start;padding-top:20px}
-.q-layout{display:flex;flex-direction:column;width:100%;max-width:480px;gap:12px}
-.prog-wrap{width:100%}
-.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}
-.prog-bar{height:6px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.q-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;gap:11px}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.prog-bar{height:5px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;margin-top:6px}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px;transition:width .5s ease}
 
-/* Live trait sidebar */
-.trait-live{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 14px}
-.trait-live-title{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;text-align:center}
-.tl-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
-.tl-lbl{font-size:10px;color:var(--muted);width:62px;flex-shrink:0;text-align:right}
-.tl-bar{flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
-.tl-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .6s cubic-bezier(.34,1.56,.64,1)}
-.tl-val{font-size:10px;color:var(--gold2);font-weight:700;width:16px;text-align:right}
+/* Live trait meter */
+.trait-live{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px 14px}
+.tl-title{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;text-align:center}
+.tl-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.tl-lbl{font-size:10px;color:var(--muted);width:64px;flex-shrink:0;text-align:right}
+.tl-bar{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden}
+.tl-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s cubic-bezier(.34,1.4,.64,1)}
+.tl-val{font-size:10px;color:var(--gold2);font-weight:700;width:14px;text-align:right}
 
-/* Question image */
-.q-img-wrap{width:100%;border-radius:14px;overflow:hidden;height:160px;background:rgba(255,255,255,.04);flex-shrink:0}
-.q-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .5s;opacity:0}
-.q-img.loaded{opacity:1}
-
-.q-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:20px 18px}
-.q-num{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.q-img-wrap{border-radius:14px;overflow:hidden;height:155px;background:rgba(255,255,255,.04)}
+.q-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s}
+.q-img.ok{opacity:1}
+.q-card{background:var(--card);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px}
+.q-num{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
 .q-text{font-size:16px;font-weight:700;line-height:1.55}
-.opts{display:flex;flex-direction:column;gap:8px}
-.opt{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:12px 15px;cursor:pointer;display:flex;align-items:center;gap:11px;font-size:14px;text-align:left;transition:.18s}
-.opt:hover{background:rgba(212,160,23,.13);border-color:rgba(212,160,23,.4);transform:translateX(4px)}
-.opt.sel{background:rgba(212,160,23,.22);border-color:var(--gold);transform:translateX(4px)}
-.opt-l{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;transition:.18s}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13.5px;transition:.18s;text-align:left}
+.opt:hover{background:rgba(212,160,23,.12);border-color:rgba(212,160,23,.4);transform:translateX(4px)}
+.opt.sel{background:rgba(212,160,23,.2);border-color:var(--gold);transform:translateX(4px)}
+.opt-l{width:27px;height:27px;border-radius:50%;background:rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;transition:.18s}
 .opt.sel .opt-l{background:var(--gold);color:#000}
 .q-nav{display:flex;gap:10px}
-.q-nav .btn{flex:1;padding:13px 16px;font-size:14px}
-.btn-back{background:rgba(255,255,255,.08);color:var(--text);box-shadow:none;border:1.5px solid rgba(255,255,255,.13)}
+.q-nav .btn{flex:1;padding:13px;font-size:14px}
+.btn-back{background:rgba(255,255,255,.08);color:var(--text);box-shadow:none;border:1.5px solid rgba(255,255,255,.12)}
 
-/* LOADING - soul scan */
-#ldScreen{background:radial-gradient(ellipse at center,rgba(212,160,23,.08) 0%,transparent 70%)}
-.scan-wrap{position:relative;width:160px;height:160px;margin-bottom:24px}
-.scan-ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;animation:scanSpin 1.5s linear infinite}
-.scan-ring:nth-child(1){border-top-color:var(--gold);animation-duration:1.5s}
-.scan-ring:nth-child(2){inset:12px;border-right-color:rgba(212,160,23,.5);animation-duration:2s;animation-direction:reverse}
-.scan-ring:nth-child(3){inset:24px;border-bottom-color:rgba(212,160,23,.3);animation-duration:2.5s}
-@keyframes scanSpin{to{transform:rotate(360deg)}}
-.scan-cross{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;animation:scanPulse 1.5s ease-in-out infinite}
-@keyframes scanPulse{0%,100%{transform:scale(1);opacity:1;filter:drop-shadow(0 0 5px rgba(212,160,23,.3))}50%{transform:scale(1.15);opacity:.8;filter:drop-shadow(0 0 20px rgba(212,160,23,.8))}}
-.scan-text{color:var(--muted);font-size:15px;text-align:center;margin-bottom:8px}
-.scan-sub{color:rgba(255,255,255,.3);font-size:12px;text-align:center}
-.scan-phrases{font-size:13px;color:var(--gold2);text-align:center;min-height:20px;margin-top:12px;font-style:italic}
+/* ══════════════════════════════════════
+   LOADING
+══════════════════════════════════════ */
+#ldScreen{background:radial-gradient(ellipse at center,rgba(212,160,23,.07) 0%,transparent 70%)}
+.scan-wrap{position:relative;width:150px;height:150px;margin-bottom:24px}
+.scan-ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;animation:sRot 1.5s linear infinite}
+.scan-ring:nth-child(1){border-top-color:var(--gold)}
+.scan-ring:nth-child(2){inset:14px;border-right-color:rgba(212,160,23,.5);animation-duration:2s;animation-direction:reverse}
+.scan-ring:nth-child(3){inset:28px;border-bottom-color:rgba(212,160,23,.3);animation-duration:2.8s}
+@keyframes sRot{to{transform:rotate(360deg)}}
+.scan-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;animation:sPulse 1.5s ease-in-out infinite}
+@keyframes sPulse{0%,100%{filter:drop-shadow(0 0 4px rgba(212,160,23,.3))}50%{filter:drop-shadow(0 0 18px rgba(212,160,23,.8))}}
+.scan-txt{color:var(--muted);font-size:15px;margin-bottom:6px}
+.scan-phrase{color:var(--gold2);font-size:13px;font-style:italic;min-height:20px;text-align:center}
 
-/* RESULT */
-#rScreen{justify-content:flex-start;padding-top:20px}
-.r-head{text-align:center;margin-bottom:12px;width:100%;max-width:480px}
-.r-head h2{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+/* ══════════════════════════════════════
+   RESULT
+══════════════════════════════════════ */
+#rScreen{justify-content:flex-start;padding-top:16px}
+.r-head{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;text-align:center;width:100%;max-width:480px}
 
-/* Silhouette reveal */
-.saint-reveal-wrap{width:100%;max-width:480px;margin-bottom:14px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer}
-.saint-photo{width:100%;height:280px;object-fit:cover;object-position:top center;display:block;filter:brightness(0) saturate(0);transition:filter 2s ease;will-change:filter}
-.saint-photo.revealed{filter:brightness(1) saturate(1)}
-.saint-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,27,42,.2) 0%,rgba(13,27,42,.95) 85%)}
-.saint-overlay-info{position:absolute;bottom:0;left:0;right:0;padding:20px}
-.s-badge{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;border-radius:50px;padding:5px 16px;font-size:12px;font-weight:800;display:inline-block;margin-bottom:10px;box-shadow:0 2px 12px rgba(212,160,23,.5)}
-.s-name{font-size:24px;font-weight:900;color:#fff;margin-bottom:3px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-.s-title-small{font-size:13px;color:rgba(255,255,255,.7)}
-.tap-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;transition:opacity .5s}
-.tap-hint span{font-size:13px;color:rgba(255,255,255,.8);font-weight:600;background:rgba(0,0,0,.5);padding:6px 16px;border-radius:50px;backdrop-filter:blur(4px)}
-.tap-hint-icon{font-size:32px;animation:tapBounce 1.2s ease-in-out infinite}
-@keyframes tapBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.tap-hint.hidden{opacity:0}
+.reveal-wrap{width:100%;max-width:480px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;margin-bottom:13px}
+.s-photo{width:100%;height:270px;object-fit:cover;object-position:top;display:block;filter:brightness(0) saturate(0);transition:filter 2.2s ease}
+.s-photo.on{filter:brightness(1) saturate(1)}
+.s-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(13,27,42,.95) 85%)}
+.s-info{position:absolute;bottom:0;left:0;right:0;padding:18px}
+.s-badge{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;border-radius:50px;padding:4px 14px;font-size:12px;font-weight:800;display:inline-block;margin-bottom:8px}
+.s-name{font-size:22px;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.6);margin-bottom:2px}
+.s-title-sm{font-size:12px;color:rgba(255,255,255,.65)}
+.tap-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .5s;background:rgba(0,0,0,.3)}
+.tap-icon{font-size:36px;animation:tapB 1.2s ease-in-out infinite}
+@keyframes tapB{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.tap-hint span{font-size:13px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.5);padding:6px 18px;border-radius:50px;backdrop-filter:blur(4px);font-weight:600}
+.tap-hint.gone{opacity:0;pointer-events:none}
 
-.saint-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:20px;padding:20px 18px;width:100%;max-width:480px;margin-bottom:14px}
-.s-quote{font-style:italic;font-size:14px;color:rgba(255,255,255,.9);border-left:3px solid var(--gold);padding-left:14px;margin-bottom:14px;line-height:1.75;min-height:40px}
+.s-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.11);border-radius:18px;padding:18px;width:100%;max-width:480px;margin-bottom:13px;opacity:0;transition:opacity .8s}
+.s-card.show{opacity:1}
+.s-quote{font-style:italic;font-size:14px;color:rgba(255,255,255,.9);border-left:3px solid var(--gold);padding-left:13px;margin-bottom:13px;line-height:1.75;min-height:36px}
 .cursor{display:inline-block;width:2px;height:1em;background:var(--gold2);vertical-align:text-bottom;animation:blink .7s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.s-desc{font-size:14px;line-height:1.7;color:rgba(255,255,255,.82);margin-bottom:14px}
-.s-tags{display:flex;flex-wrap:wrap;gap:7px}
-.s-tag{background:rgba(212,160,23,.16);border:1px solid rgba(212,160,23,.32);color:var(--gold2);border-radius:50px;padding:4px 12px;font-size:12px;font-weight:600}
+.s-desc{font-size:14px;line-height:1.7;color:rgba(255,255,255,.82);margin-bottom:13px}
+.s-tags{display:flex;flex-wrap:wrap;gap:6px}
+.s-tag{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);color:var(--gold2);border-radius:50px;padding:4px 12px;font-size:12px;font-weight:600}
 
-.chart-card{background:var(--card);border:1.5px solid rgba(255,255,255,.09);border-radius:20px;padding:18px 14px;width:100%;max-width:480px;margin-bottom:14px}
-.chart-card h3{text-align:center;font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
-.chart-wrap{max-width:270px;margin:0 auto}
-.bars{margin-top:14px;display:flex;flex-direction:column;gap:7px}
-.bar-row{display:flex;align-items:center;gap:8px}
+.chart-card{background:var(--card);border:1.5px solid rgba(255,255,255,.09);border-radius:18px;padding:16px;width:100%;max-width:480px;margin-bottom:13px;opacity:0;transition:opacity .8s .3s}
+.chart-card.show{opacity:1}
+.cc-title{text-align:center;font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.chart-wrap{max-width:260px;margin:0 auto}
+.bars{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.bar-row{display:flex;align-items:center;gap:7px}
 .bar-lbl{font-size:11px;color:var(--muted);width:78px;flex-shrink:0;text-align:right}
 .bar-bg{flex:1;height:6px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
 .bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width 1.4s cubic-bezier(.34,1.1,.64,1)}
 .bar-pct{font-size:11px;color:var(--gold2);font-weight:700;width:28px}
 
-.runners{width:100%;max-width:480px;margin-bottom:14px}
-.runners h3{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;text-align:center}
-.runner-list{display:flex;gap:10px}
-.runner{background:var(--card);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;text-align:center}
-.runner-img{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid rgba(212,160,23,.35)}
+.runners{width:100%;max-width:480px;margin-bottom:13px;opacity:0;transition:opacity .8s .6s}
+.runners.show{opacity:1}
+.r-sec-title{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;text-align:center}
+.runner-list{display:flex;gap:9px}
+.runner{background:var(--card);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;text-align:center}
+.runner-img{width:50px;height:50px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid rgba(212,160,23,.35)}
 .runner-name{font-size:11px;font-weight:700;line-height:1.35}
 .runner-pct{font-size:15px;font-weight:800;color:var(--gold2)}
 
-.contemp-card{background:linear-gradient(135deg,rgba(100,60,0,.22),rgba(20,50,10,.2));border:1.5px solid rgba(212,160,23,.22);border-radius:20px;padding:18px 18px;width:100%;max-width:480px;margin-bottom:14px}
-.contemp-card h3{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.contemp-card{background:linear-gradient(135deg,rgba(100,60,0,.2),rgba(20,50,10,.18));border:1.5px solid rgba(212,160,23,.22);border-radius:18px;padding:18px;width:100%;max-width:480px;margin-bottom:13px;opacity:0;transition:opacity .8s .9s}
+.contemp-card.show{opacity:1}
+.contemp-card h3{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:9px}
 .contemp-card p{font-size:14px;line-height:1.75;color:rgba(255,255,255,.85)}
 
-.card-badge{background:linear-gradient(135deg,rgba(212,160,23,.2),rgba(80,40,0,.2));border:1.5px solid rgba(212,160,23,.4);border-radius:14px;padding:14px 16px;width:100%;max-width:480px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
-.card-badge .cb-text{font-size:13px;line-height:1.6;color:rgba(255,255,255,.9)}
-.card-badge .cb-text strong{color:var(--gold2)}
-
-/* Share card canvas */
-#shareCanvas{display:none}
+.card-badge{background:linear-gradient(135deg,rgba(212,160,23,.18),rgba(80,40,0,.18));border:1.5px solid rgba(212,160,23,.38);border-radius:14px;padding:14px 16px;width:100%;max-width:480px;margin-bottom:13px;display:flex;align-items:center;gap:12px;opacity:0;transition:opacity .8s 1.2s}
+.card-badge.show{opacity:1}
+.cb-text{font-size:13px;line-height:1.6;color:rgba(255,255,255,.9)}
+.cb-text strong{color:var(--gold2)}
 
 .r-actions{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:480px;margin-bottom:16px}
 
-/* Confetti canvas */
+canvas#cfx{position:fixed;inset:0;pointer-events:none;z-index:999;display:none}
 </style>
 </head>
 <body>
-<div class="stars" id="stars"></div>
-<canvas id="confetti"></canvas>
+<canvas id="cfx"></canvas>
 
-<!-- INTRO -->
+<!-- ══════════════════════════════════════
+     INTRO
+══════════════════════════════════════ -->
 <div class="screen active" id="iScreen">
-  <div class="i-icon-wrap">
-    <div class="intro-aura"></div>
-    <div class="i-icon">✨</div>
+  <div class="i-bg" id="iBg"></div>
+  <div class="i-content">
+    <div class="i-cross">✝️</div>
+    <h1 class="i-title">Bạn Giống<br><span>Vị Thánh Nào?</span></h1>
+    <p class="i-sub">Khám phá vị Thánh có tính cách tương đồng với bạn qua 20 câu hỏi tình huống</p>
+    <div class="chips">
+      <span class="chip">🕊️ 50 Vị Thánh</span>
+      <span class="chip">❓ 20 Câu hỏi</span>
+      <span class="chip">⏱️ ~3 phút</span>
+      <span class="chip">📲 Chia sẻ ngay</span>
+    </div>
+    <button class="btn" onclick="startQuiz()">✨ Bắt đầu trắc nghiệm</button>
   </div>
-  <h1 class="i-title">Bạn Giống<br><span>Vị Thánh Nào?</span></h1>
-  <p class="i-sub">Trả lời 20 câu hỏi để khám phá vị Thánh có tính cách tương đồng với bạn nhất.</p>
-  <div class="chips">
-    <span class="chip">🕊️ 20 Vị Thánh</span>
-    <span class="chip">❓ 20 Câu hỏi</span>
-    <span class="chip">✨ Kết quả bất ngờ</span>
-    <span class="chip">📲 Chia sẻ ngay</span>
-  </div>
-  <button class="btn" onclick="startQuiz()">Bắt đầu ngay ✨</button>
+  <div class="saint-strip-wrap"><div class="saint-strip" id="sStrip"></div></div>
 </div>
 
-<!-- QUIZ -->
+<!-- ══════════════════════════════════════
+     QUIZ
+══════════════════════════════════════ -->
 <div class="screen" id="qScreen">
-  <div class="q-layout">
-    <div class="prog-wrap">
-      <div class="prog-info"><span id="pLabel">Câu 1 / 20</span><span id="pPct">0%</span></div>
+  <div class="q-wrap">
+    <div>
+      <div class="prog-info"><span id="pLbl">Câu 1 / 20</span><span id="pPct">0%</span></div>
       <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
     </div>
-    <!-- Live trait meter -->
-    <div class="trait-live" id="traitLive">
-      <div class="trait-live-title">🔍 Hồ sơ tâm hồn của bạn</div>
-      <div id="tlBars"></div>
-    </div>
-    <div class="q-img-wrap"><img class="q-img" id="qImg" src="" alt="" onload="this.classList.add('loaded')" onerror="this.closest('.q-img-wrap').style.display='none'"></div>
-    <div class="q-card">
-      <div class="q-num" id="qNum">CÂU 01</div>
-      <div class="q-text" id="qText"></div>
-    </div>
+    <div class="trait-live"><div class="tl-title">🔍 Hồ sơ tâm hồn</div><div id="tlBars"></div></div>
+    <div class="q-img-wrap"><img class="q-img" id="qImg" src="" onload="this.classList.add('ok')" onerror="this.closest('.q-img-wrap').style.display='none'" alt=""></div>
+    <div class="q-card"><div class="q-num" id="qNum">CÂU 01</div><div class="q-text" id="qTxt"></div></div>
     <div class="opts" id="optsWrap"></div>
     <div class="q-nav">
       <button class="btn btn-back" id="backBtn" onclick="prev()" style="display:none">← Quay lại</button>
@@ -195,453 +207,563 @@ canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:999;display:n
   </div>
 </div>
 
-<!-- LOADING -->
+<!-- ══════════════════════════════════════
+     LOADING
+══════════════════════════════════════ -->
 <div class="screen" id="ldScreen">
   <div class="scan-wrap">
-    <div class="scan-ring"></div>
-    <div class="scan-ring"></div>
-    <div class="scan-ring"></div>
-    <div class="scan-cross">✝️</div>
+    <div class="scan-ring"></div><div class="scan-ring"></div><div class="scan-ring"></div>
+    <div class="scan-icon">✝️</div>
   </div>
-  <div class="scan-text">Đang quét tâm hồn của bạn...</div>
-  <div class="scan-sub">Phân tích 10 chiều tính cách</div>
-  <div class="scan-phrases" id="scanPhrases"></div>
+  <div class="scan-txt">Đang quét tâm hồn của bạn...</div>
+  <div class="scan-phrase" id="scanPhrase"></div>
 </div>
 
-<!-- RESULT -->
+<!-- ══════════════════════════════════════
+     RESULT
+══════════════════════════════════════ -->
 <div class="screen" id="rScreen">
-  <div class="r-head"><h2>🎉 Vị Thánh của bạn đã được tìm thấy</h2></div>
-
-  <!-- Silhouette reveal -->
-  <div class="saint-reveal-wrap" id="revealWrap" onclick="revealSaint()">
-    <img class="saint-photo" id="sPhoto" src="" alt="">
-    <div class="saint-overlay"></div>
-    <div class="saint-overlay-info">
-      <div class="s-badge" id="sMatch">✨ Tương đồng 87%</div>
-      <div class="s-name" id="sName">Đang tải...</div>
-      <div class="s-title-small" id="sTitle"></div>
+  <div class="r-head">🎉 Vị Thánh của bạn đã được tìm thấy</div>
+  <div class="reveal-wrap" id="revealWrap" onclick="reveal()">
+    <img class="s-photo" id="sPhoto" src="" alt="" onerror="this.style.background='#1a2744'">
+    <div class="s-overlay"></div>
+    <div class="s-info">
+      <div class="s-badge" id="sBadge">✨ 87%</div>
+      <div class="s-name" id="sName"></div>
+      <div class="s-title-sm" id="sTitle"></div>
     </div>
     <div class="tap-hint" id="tapHint">
-      <div class="tap-hint-icon">👆</div>
+      <div class="tap-icon">👆</div>
       <span>Chạm để khám phá vị Thánh của bạn!</span>
     </div>
   </div>
-
-  <div class="saint-card" id="saintCard" style="opacity:0;transition:opacity .8s">
+  <div class="s-card" id="sCard">
     <div class="s-quote" id="sQuote"></div>
     <div class="s-desc" id="sDesc"></div>
     <div class="s-tags" id="sTags"></div>
   </div>
-  <div class="chart-card" id="chartCard" style="opacity:0;transition:opacity .8s 0.3s">
-    <h3>Hồ sơ tính cách của bạn</h3>
+  <div class="chart-card" id="chartCard">
+    <div class="cc-title">Hồ sơ tính cách của bạn</div>
     <div class="chart-wrap"><canvas id="radar"></canvas></div>
     <div class="bars" id="bars"></div>
   </div>
-  <div class="runners" id="runnersWrap" style="opacity:0;transition:opacity .8s 0.6s">
-    <h3>🌟 Bạn còn giống với...</h3>
-    <div class="runner-list" id="runners"></div>
+  <div class="runners" id="runnersWrap">
+    <div class="r-sec-title">🌟 Bạn còn giống với...</div>
+    <div class="runner-list" id="runnerList"></div>
   </div>
-  <div class="contemp-card" id="contempCard" style="opacity:0;transition:opacity .8s 0.9s">
+  <div class="contemp-card" id="contempCard">
     <h3>🙏 Thực hành chiêm niệm</h3>
-    <p id="contemp"></p>
+    <p id="contempTxt"></p>
   </div>
-  <div class="card-badge" id="cardBadgeWrap" style="opacity:0;transition:opacity .8s 1.2s">
-    <div style="font-size:28px">🎴</div>
-    <div class="cb-text" id="cardBadge"></div>
+  <div class="card-badge" id="cardBadge">
+    <div style="font-size:26px">🎴</div>
+    <div class="cb-text" id="cbTxt"></div>
   </div>
   <div class="r-actions">
     <button class="btn" onclick="shareResult()">📤 Chia sẻ kết quả</button>
-    <button class="btn-dl" onclick="downloadCard()">🖼️ Tải thẻ Thánh về máy</button>
-    <button class="btn2" onclick="restart()">🔄 Làm lại trắc nghiệm</button>
+    <button class="btn-dl" onclick="downloadCard()">🖼️ Tải Thẻ Thánh</button>
+    <button class="btn2" onclick="restart()">🔄 Làm lại</button>
   </div>
 </div>
-
-<!-- Hidden share canvas -->
-<canvas id="shareCanvas" width="800" height="800"></canvas>
+<canvas id="shareCanvas" width="800" height="800" style="display:none"></canvas>
 
 <script>
-// ══════════════════════════════════════════════
-// DATA
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════════
+// TRAITS
+// ════════════════════════════════════════════
 const TR=[
   {k:'courage',l:'Dũng Cảm'},{k:'charity',l:'Yêu Thương'},{k:'leadership',l:'Lãnh Đạo'},
   {k:'wisdom',l:'Thông Thái'},{k:'sacrifice',l:'Hy Sinh'},{k:'prayer',l:'Cầu Nguyện'},
   {k:'creativity',l:'Sáng Tạo'},{k:'peace',l:'Bình An'},{k:'humility',l:'Khiêm Nhường'},{k:'mission',l:'Truyền Giáo'}
 ];
 
+// ════════════════════════════════════════════
+// 50 SAINTS
+// ════════════════════════════════════════════
 const SAINTS=[
-  {name:'Thánh Têrêsa Calcutta',title:'Mẹ của người nghèo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mother_Teresa_1.jpg/330px-Mother_Teresa_1.jpg',quote:'"Nếu bạn xét đoán người khác, bạn không còn thời gian để yêu thương họ nữa."',desc:'Dành trọn cuộc đời phục vụ người nghèo trên đường phố Calcutta. Mẹ tin rằng mỗi người gặp gỡ đều là Chúa Giêsu trong một dạng khác.',contemp:'Hôm nay thực hiện một hành động yêu thương nhỏ âm thầm — một nụ cười, lời hỏi thăm, hay chia sẻ bữa ăn với người cô đơn.',tags:['#YêuThương','#PhụcVụ','#KhiêmNhường'],scores:{courage:3,charity:5,leadership:3,wisdom:2,sacrifice:5,prayer:4,creativity:2,peace:3,humility:5,mission:3}},
-  {name:'Thánh Phanxicô Assisi',title:'Người anh em của mọi loài',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Philip_Fruytiers_-_St._Francis_of_Assisi.jpg/330px-Philip_Fruytiers_-_St._Francis_of_Assisi.jpg',quote:'"Chúa ơi, xin làm cho con trở nên khí cụ bình an của Chúa."',desc:'Từ bỏ gia sản để sống nghèo hèn, rao giảng Tin Mừng cho muôn loài. Người xây dựng nhịp cầu hòa giải và nhìn thấy Thiên Chúa trong mọi thụ tạo.',contemp:'Ra ngoài thiên nhiên 15 phút. Quan sát cây cối, chim chóc. Tạ ơn Chúa và cầu nguyện cho bình an trong tâm hồn bạn.',tags:['#BìnhAn','#YêuThương','#KhiêmNhường'],scores:{courage:3,charity:5,leadership:2,wisdom:3,sacrifice:4,prayer:4,creativity:4,peace:5,humility:5,mission:3}},
-  {name:'Thánh Phêrô Tông Đồ',title:'Tảng đá của Giáo Hội',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Saint_Peter-Sinai_%286th_Century%29_Crop.jpg/330px-Saint_Peter-Sinai_%286th_Century%29_Crop.jpg',quote:'"Thưa Thầy, bỏ Thầy chúng con biết theo ai? Thầy mới có những lời đem lại sự sống."',desc:'Dù từng chối Chúa, Phêrô đứng dậy và dẫn dắt Giáo Hội sơ khai với lòng dũng cảm kiên định. Hành trình ngài chứng minh sức mạnh được xây từ những lần vấp ngã.',contemp:'Nghĩ đến một lần bạn thất bại. Xin Chúa tha thứ và đứng dậy — không phải vì xứng đáng, mà vì Chúa tin vào bạn.',tags:['#LãnhĐạo','#DũngCảm','#TruyềnGiáo'],scores:{courage:5,charity:3,leadership:5,wisdom:3,sacrifice:3,prayer:3,creativity:2,peace:2,humility:2,mission:4}},
-  {name:'Thánh Gioan Phaolô II',title:'Vị Giáo Hoàng của Giới Trẻ',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/ADAMELLO_-_PAPA_-_Giovanni_Paolo_II_-_panoramio_%28cropped%29.jpg/330px-ADAMELLO_-_PAPA_-_Giovanni_Paolo_II_-_panoramio_%28cropped%29.jpg',quote:'"Đừng sợ! Hãy mở rộng cửa cho Đức Kitô!"',desc:'Kết hợp trí tuệ sâu sắc với tình yêu truyền giáo mãnh liệt. Ngài đi khắp thế giới mang Tin Mừng và thay đổi lịch sử bằng đức tin không sợ hãi.',contemp:'Làm một điều bạn từ lâu sợ làm vì đức tin — chia sẻ câu Kinh Thánh, mời bạn bè đến lễ, hay công khai cầu nguyện.',tags:['#LãnhĐạo','#TruyềnGiáo','#ThôngThái'],scores:{courage:4,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:4,humility:3,mission:5}},
-  {name:'Thánh Tôma Aquinô',title:'Tiến sĩ Thiên thần',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/St-thomas-aquinasFXD.jpg/330px-St-thomas-aquinasFXD.jpg',quote:'"Đức tin tìm kiếm sự hiểu biết."',desc:'Bộ óc thần học vĩ đại nhất của Giáo Hội, dùng lý trí và đức tin xây dựng nền triết học Kitô giáo. Tôma tin rằng chân lý không sợ bất kỳ câu hỏi nào.',contemp:'Dành 10 phút đọc chậm một đoạn Kinh Thánh. Tự hỏi: "Điều này có nghĩa gì với cuộc sống mình hôm nay?" Ghi lại suy nghĩ.',tags:['#ThôngThái','#SángTạo','#CầuNguyện'],scores:{courage:2,charity:3,leadership:2,wisdom:5,sacrifice:2,prayer:4,creativity:4,peace:3,humility:3,mission:2}},
-  {name:'Thánh Augustinô',title:'Tiến sĩ Ân Sủng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Saint_Augustine_by_Philippe_de_Champaigne.jpg/330px-Saint_Augustine_by_Philippe_de_Champaigne.jpg',quote:'"Lòng con khắc khoải cho đến khi được nghỉ ngơi trong Chúa."',desc:'Từ cuộc đời đầy sóng gió, Augustinô tìm được Thiên Chúa và trở thành nhà thần học vĩ đại. Hành trình ngài là niềm hy vọng cho mọi người đang tìm kiếm ý nghĩa sống.',contemp:'Viết một đoạn nhật ký ngắn về hành trình đức tin của bạn — những lúc xa Chúa, những lúc trở về. Đây là lời cầu nguyện riêng.',tags:['#ThôngThái','#CầuNguyện','#SángTạo'],scores:{courage:3,charity:3,leadership:3,wisdom:5,sacrifice:3,prayer:5,creativity:4,peace:2,humility:3,mission:3}},
-  {name:'Các Thánh Tử Đạo Việt Nam',title:'Chứng nhân đức tin trên quê hương',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Fr.Maximilian_Kolbe_in_1936.jpg/330px-Fr.Maximilian_Kolbe_in_1936.jpg',quote:'"Tôi sẵn sàng chịu mọi cực hình chứ không chối bỏ đức tin."',desc:'Hơn 100,000 người Công Giáo Việt Nam can đảm chịu chết vì đức tin qua nhiều thế kỷ bách hại. Họ không sợ hãi, để lại di sản đức tin sống động đến hôm nay.',contemp:'Đọc tên một vị Thánh Tử Đạo Việt Nam. Suy nghĩ: điều gì giữ họ vững trong thử thách? Điều gì đang thử thách đức tin của bạn?',tags:['#DũngCảm','#HySinh','#CầuNguyện'],scores:{courage:5,charity:3,leadership:3,wisdom:2,sacrifice:5,prayer:5,creativity:1,peace:3,humility:4,mission:3}},
-  {name:'Thánh Maximilian Kolbe',title:'Vị tử đạo của tình yêu',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Fr.Maximilian_Kolbe_in_1936.jpg/330px-Fr.Maximilian_Kolbe_in_1936.jpg',quote:'"Chỉ có tình yêu mới có thể chinh phục thù hận."',desc:'Linh mục Ba Lan tình nguyện chết thay cho người cha có gia đình trong trại Auschwitz. Câu chuyện ngài là minh chứng về tình yêu hy sinh không điều kiện.',contemp:'Hôm nay từ bỏ một điều bạn muốn để nhường cho người khác — chỗ ngồi, phần ăn, thời gian. Làm trong im lặng.',tags:['#HySinh','#DũngCảm','#YêuThương'],scores:{courage:5,charity:4,leadership:3,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:3,humility:4,mission:3}},
-  {name:'Thánh Têrêsa Hài Đồng Giêsu',title:'Con đường thơ ấu thiêng liêng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Teresa-de-Lisieux.jpg/330px-Teresa-de-Lisieux.jpg',quote:'"Ơn gọi của tôi là Tình Yêu."',desc:'Không làm phép lạ vĩ đại — nhưng làm mọi việc nhỏ với tình yêu to lớn. Con đường nhỏ bé của Têrêsa trở thành ánh sáng cho hàng triệu tâm hồn.',contemp:'Chọn một việc nhỏ nhất hôm nay — rửa chén, chào hỏi, nhặt rác — và làm với tất cả tình yêu. Đó là lời cầu nguyện của bạn.',tags:['#CầuNguyện','#KhiêmNhường','#YêuThương'],scores:{courage:3,charity:4,leadership:2,wisdom:3,sacrifice:4,prayer:5,creativity:3,peace:4,humility:5,mission:3}},
-  {name:'Thánh Gioan Thánh Giá',title:'Bậc thầy chiêm niệm',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Zurbar%C3%A1n_%28atribuido%29-John_of_the_Cross-1656.jpg/330px-Zurbar%C3%A1n_%28atribuido%29-John_of_the_Cross-1656.jpg',quote:'"Trong buổi chiều cuộc đời, bạn sẽ bị xét xử về tình yêu."',desc:'Nhà thơ và thần học gia chiêm niệm, viết về "Đêm tối tâm hồn" — hành trình qua bóng tối để đến ánh sáng Thiên Chúa.',contemp:'Tắt điện thoại 20 phút. Ngồi yên trong thinh lặng. Không cầu nguyện bằng lời — chỉ hiện diện trước Thiên Chúa.',tags:['#CầuNguyện','#HySinh','#KhiêmNhường'],scores:{courage:4,charity:3,leadership:2,wisdom:4,sacrifice:4,prayer:5,creativity:3,peace:3,humility:5,mission:2}},
-  {name:'Thánh Hildegard of Bingen',title:'Nhà tiên tri sáng tạo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Hildegard_von_Bingen.jpg/330px-Hildegard_von_Bingen.jpg',quote:'"Tôi, một ngọn lửa nhỏ, chiếu sáng nhờ ánh sáng của Thiên Chúa."',desc:'Nhà thần học, nhạc sĩ, họa sĩ và thầy thuốc thế kỷ 12. Hildegard tin mọi tài năng sáng tạo đều là hơi thở của Thiên Chúa trong con người.',contemp:'Hãy sáng tạo điều gì đó hôm nay vì Chúa — vẽ tranh, viết vài dòng thơ, hay hát thánh ca. Không cần hoàn hảo, chỉ cần thành tâm.',tags:['#SángTạo','#ThôngThái','#CầuNguyện'],scores:{courage:3,charity:3,leadership:3,wisdom:4,sacrifice:2,prayer:4,creativity:5,peace:3,humility:3,mission:2}},
-  {name:'Thánh Martin de Porres',title:'Người anh em của mọi người',photo:'https://upload.wikimedia.org/wikipedia/commons/2/29/San_Martin_de_Porres_huaycan.jpg',quote:'"Hãy yêu thương người nghèo — đó là con đường ngắn nhất đến với Thiên Chúa."',desc:'Sinh ra trong bất bình đẳng nhưng trở thành biểu tượng bình an và yêu thương. Martin chữa lành bệnh nhân và không bao giờ phân biệt sang hèn.',contemp:'Hôm nay hãy làm hòa với người bạn đang xích mích, hoặc mang nụ cười cho ai đó đang buồn. Bình an bắt đầu từ cử chỉ nhỏ.',tags:['#BìnhAn','#YêuThương','#KhiêmNhường'],scores:{courage:2,charity:5,leadership:2,wisdom:2,sacrifice:4,prayer:4,creativity:3,peace:5,humility:5,mission:2}},
-  {name:'Thánh Phanxicô Xaviê',title:'Sứ giả Châu Á',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Franciscus_de_Xabier.jpg/330px-Franciscus_de_Xabier.jpg',quote:'"Hãy cho tôi biết ngọn lửa nào đã thiêu đốt trái tim tôi khi thấy linh hồn chưa biết Chúa."',desc:'Nhà truyền giáo vĩ đại nhất sau thời Tông Đồ, mang Tin Mừng đến Ấn Độ, Nhật Bản và khắp Châu Á.',contemp:'Cầu nguyện cho một người bạn biết chưa có đức tin. Xin Chúa dùng bạn như nhịp cầu đến với họ.',tags:['#TruyềnGiáo','#DũngCảm','#HySinh'],scores:{courage:5,charity:3,leadership:4,wisdom:3,sacrifice:5,prayer:3,creativity:2,peace:2,humility:2,mission:5}},
-  {name:'Thánh Phaolô Tông Đồ',title:'Ngọn lửa Tin Mừng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Fresco_of_Saint_Paul_at_Ephesus.jpg/330px-Fresco_of_Saint_Paul_at_Ephesus.jpg',quote:'"Tôi có thể làm mọi sự trong Đấng ban sức mạnh cho tôi."',desc:'Từ kẻ bách hại Kitô hữu thành nhà truyền giáo vĩ đại nhất. Phaolô nhắc nhở: không ai quá xa để được Thiên Chúa biến đổi.',contemp:'Nhớ lại khoảnh khắc Chúa thay đổi bạn. Chia sẻ câu chuyện đó với ít nhất một người trong tuần này.',tags:['#TruyềnGiáo','#DũngCảm','#LãnhĐạo'],scores:{courage:5,charity:3,leadership:5,wisdom:4,sacrifice:4,prayer:3,creativity:3,peace:2,humility:2,mission:5}},
-  {name:'Thánh Giuse',title:'Người cha âm thầm',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Guido_Reni_-_St_Joseph_with_the_Infant_Jesus_-_WGA19304.jpg/330px-Guido_Reni_-_St_Joseph_with_the_Infant_Jesus_-_WGA19304.jpg',quote:'"Đừng sợ, cứ đón Maria về nhà." (Lời Thiên Thần với Giuse)',desc:'Người cha âm thầm không có lời nào ghi lại trong Kinh Thánh — nhưng trung tín trong từng bước đi. Giuse dạy rằng trung thành trong bóng tối là đức hạnh cao quý nhất.',contemp:'Hôm nay thực hiện một việc trong gia đình mà không ai yêu cầu và không cần ai ghi nhận. Làm vì tình yêu.',tags:['#KhiêmNhường','#HySinh','#BìnhAn'],scores:{courage:4,charity:3,leadership:2,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:5,humility:5,mission:2}},
-  {name:'Thánh Gioan Tẩy Giả',title:'Người dọn đường',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Accademia_-_St_John_the_Baptist_by_Titian_Cat314.jpg/330px-Accademia_-_St_John_the_Baptist_by_Titian_Cat314.jpg',quote:'"Người phải lớn lên, còn tôi phải nhỏ lại."',desc:'Sống trong sa mạc, rao giảng sự hoán cải không khoan nhượng. Gioan dọn đường cho Đấng Cứu Thế với dũng cảm không sợ cường quyền.',contemp:'Xem xét cuộc sống bạn: điều gì cần "dọn dẹp" để Chúa có chỗ? Hãy thống hối một điều cụ thể hôm nay.',tags:['#DũngCảm','#TruyềnGiáo','#HySinh'],scores:{courage:5,charity:2,leadership:3,wisdom:3,sacrifice:5,prayer:5,creativity:2,peace:2,humility:3,mission:4}},
-  {name:'Thánh Maria Mađalêna',title:'Tông đồ của các Tông đồ',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TINTORETTO_-_Magdalena_penitente_%28Musei_Capitolini%2C_Roma%2C_1598-1602%29_-_copia.jpg/330px-TINTORETTO_-_Magdalena_penitente_%28Musei_Capitolini%2C_Roma%2C_1598-1602%29_-_copia.jpg',quote:'"Tôi đã thấy Chúa!" — người đầu tiên loan báo Phục Sinh.',desc:'Được Chúa thứ tha và trở thành chứng nhân đầu tiên của Phục Sinh. Tình yêu trung thành của bà có thể biến đổi hoàn toàn một cuộc đời.',contemp:'Nghĩ đến ơn lành Chúa ban mà bạn đã quên tạ ơn. Hôm nay cầu nguyện lời tạ ơn đó và chia sẻ niềm vui với người thân.',tags:['#YêuThương','#CầuNguyện','#KhiêmNhường'],scores:{courage:3,charity:5,leadership:2,wisdom:3,sacrifice:3,prayer:5,creativity:3,peace:4,humility:4,mission:3}},
-  {name:'Thánh Đa Minh',title:'Người rao giảng sự thật',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/SaintDominic.jpg/330px-SaintDominic.jpg',quote:'"Hãy nói về Chúa hay nói với Chúa — đừng lãng phí lời nói."',desc:'Sáng lập Dòng Giảng Thuyết, dùng kiến thức và lời giảng bảo vệ đức tin. Đa Minh tin chân lý được rao giảng bằng tình yêu có sức mạnh thay đổi thế giới.',contemp:'Hôm nay chia sẻ một điều về đức tin với ai đó — câu Kinh Thánh, câu chuyện về Thánh. Không cần dài, chỉ cần chân thành.',tags:['#TruyềnGiáo','#ThôngThái','#LãnhĐạo'],scores:{courage:3,charity:3,leadership:4,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:5}},
-  {name:'Thánh Inhaxiô Loyola',title:'Người lính của Đức Kitô',photo:'https://upload.wikimedia.org/wikipedia/commons/f/f9/Ignatius_Loyola.jpg',quote:'"Làm mọi sự vì vinh quang cao hơn của Thiên Chúa."',desc:'Cựu chiến binh trở thành nhà lãnh đạo tinh thần, sáng lập Dòng Tên và xây dựng hệ thống linh thao giúp hàng triệu người khám phá ơn gọi.',contemp:'Thử linh thao ngắn: trong 5 phút xem xét ngày hôm nay — khoảnh khắc nào gần Chúa nhất? Xa Chúa nhất? Ghi lại.',tags:['#LãnhĐạo','#ThôngThái','#DũngCảm'],scores:{courage:5,charity:3,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:5}},
-  {name:'Thánh Catarina Siena',title:'Tiến sĩ Giáo Hội',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Giovanni_Battista_Tiepolo_096.jpg/330px-Giovanni_Battista_Tiepolo_096.jpg',quote:'"Hãy là người bạn muốn trở thành."',desc:'Người phụ nữ không biết chữ nhưng thuyết phục Giáo Hoàng trở về Roma và cải tổ Giáo Hội. Tình yêu dũng cảm và cầu nguyện kiên trì có thể thay đổi cả thế giới.',contemp:'Nhìn vào vấn đề bạn thường than thở. Hôm nay thay vì than, hãy cầu nguyện cụ thể và nghĩ bạn có thể làm gì.',tags:['#DũngCảm','#ThôngThái','#LãnhĐạo'],scores:{courage:5,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:4}},
+  {name:'Thánh Têrêsa Calcutta',title:'Mẹ của người nghèo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mother_Teresa_1.jpg/330px-Mother_Teresa_1.jpg',quote:'"Nếu bạn xét đoán người khác, bạn không còn thời gian để yêu thương họ."',desc:'Dành trọn cuộc đời phục vụ người nghèo trên đường phố Calcutta. Mẹ tin mỗi người gặp gỡ đều là Chúa Giêsu trong một dạng khác.',contemp:'Hôm nay thực hiện một hành động yêu thương nhỏ âm thầm — một nụ cười, lời hỏi thăm, hay chia sẻ bữa ăn.',tags:['#YêuThương','#PhụcVụ','#KhiêmNhường'],sc:{courage:3,charity:5,leadership:3,wisdom:2,sacrifice:5,prayer:4,creativity:2,peace:3,humility:5,mission:3}},
+  {name:'Thánh Phanxicô Assisi',title:'Người anh em của mọi loài',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Philip_Fruytiers_-_St._Francis_of_Assisi.jpg/330px-Philip_Fruytiers_-_St._Francis_of_Assisi.jpg',quote:'"Chúa ơi, xin làm cho con trở nên khí cụ bình an của Chúa."',desc:'Từ bỏ gia sản để sống nghèo hèn, rao giảng Tin Mừng cho muôn loài. Người xây dựng nhịp cầu hòa giải và nhìn thấy Thiên Chúa trong mọi thụ tạo.',contemp:'Ra ngoài thiên nhiên 15 phút, quan sát cây cối, chim chóc và tạ ơn Chúa vì vẻ đẹp đó.',tags:['#BìnhAn','#YêuThương','#KhiêmNhường'],sc:{courage:3,charity:5,leadership:2,wisdom:3,sacrifice:4,prayer:4,creativity:4,peace:5,humility:5,mission:3}},
+  {name:'Thánh Phêrô Tông Đồ',title:'Tảng đá của Giáo Hội',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Saint_Peter-Sinai_%286th_Century%29_Crop.jpg/330px-Saint_Peter-Sinai_%286th_Century%29_Crop.jpg',quote:'"Thưa Thầy, bỏ Thầy chúng con biết theo ai? Thầy mới có lời đem lại sự sống đời đời."',desc:'Dù từng chối Chúa, Phêrô đứng dậy và dẫn dắt Giáo Hội sơ khai với lòng dũng cảm. Hành trình ngài chứng minh sức mạnh được xây từ những lần vấp ngã.',contemp:'Nghĩ đến lần bạn thất bại. Xin Chúa tha thứ và đứng dậy — vì Chúa tin vào bạn.',tags:['#LãnhĐạo','#DũngCảm','#TruyềnGiáo'],sc:{courage:5,charity:3,leadership:5,wisdom:3,sacrifice:3,prayer:3,creativity:2,peace:2,humility:2,mission:4}},
+  {name:'Thánh Gioan Phaolô II',title:'Vị Giáo Hoàng của Giới Trẻ',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/ADAMELLO_-_PAPA_-_Giovanni_Paolo_II_-_panoramio_%28cropped%29.jpg/330px-ADAMELLO_-_PAPA_-_Giovanni_Paolo_II_-_panoramio_%28cropped%29.jpg',quote:'"Đừng sợ! Hãy mở rộng cửa cho Đức Kitô!"',desc:'Kết hợp trí tuệ sâu sắc với tình yêu truyền giáo mãnh liệt. Ngài đi khắp thế giới mang Tin Mừng và thay đổi lịch sử bằng đức tin không sợ hãi.',contemp:'Hôm nay làm điều bạn từ lâu sợ làm vì đức tin — chia sẻ câu Kinh Thánh hay mời bạn bè đến lễ.',tags:['#LãnhĐạo','#TruyềnGiáo','#ThôngThái'],sc:{courage:4,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:4,humility:3,mission:5}},
+  {name:'Thánh Tôma Aquinô',title:'Tiến sĩ Thiên thần',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/St-thomas-aquinasFXD.jpg/330px-St-thomas-aquinasFXD.jpg',quote:'"Đức tin tìm kiếm sự hiểu biết."',desc:'Bộ óc thần học vĩ đại nhất của Giáo Hội, dùng lý trí và đức tin xây dựng nền triết học Kitô giáo. Tôma tin chân lý không sợ bất kỳ câu hỏi nào.',contemp:'Dành 10 phút đọc chậm một đoạn Kinh Thánh và tự hỏi: Điều này có nghĩa gì với cuộc sống mình hôm nay?',tags:['#ThôngThái','#SángTạo','#CầuNguyện'],sc:{courage:2,charity:3,leadership:2,wisdom:5,sacrifice:2,prayer:4,creativity:4,peace:3,humility:3,mission:2}},
+  {name:'Thánh Augustinô',title:'Tiến sĩ Ân Sủng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Saint_Augustine_by_Philippe_de_Champaigne.jpg/330px-Saint_Augustine_by_Philippe_de_Champaigne.jpg',quote:'"Lòng con khắc khoải cho đến khi được nghỉ ngơi trong Chúa."',desc:'Từ cuộc đời đầy sóng gió, Augustinô tìm được Thiên Chúa và trở thành nhà thần học vĩ đại. Hành trình ngài là niềm hy vọng cho người đang tìm kiếm ý nghĩa sống.',contemp:'Viết một đoạn nhật ký ngắn về hành trình đức tin — những lúc xa Chúa, những lúc trở về.',tags:['#ThôngThái','#CầuNguyện','#SángTạo'],sc:{courage:3,charity:3,leadership:3,wisdom:5,sacrifice:3,prayer:5,creativity:4,peace:2,humility:3,mission:3}},
+  {name:'Các Thánh Tử Đạo Việt Nam',title:'Chứng nhân đức tin trên quê hương',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mother_Teresa_1.jpg/330px-Mother_Teresa_1.jpg',quote:'"Tôi sẵn sàng chịu mọi cực hình chứ không chối bỏ đức tin."',desc:'Hơn 100,000 người Công Giáo Việt Nam can đảm chịu chết vì đức tin. Họ không sợ hãi, để lại di sản đức tin sống động đến hôm nay.',contemp:'Đọc tên một vị Thánh Tử Đạo Việt Nam. Suy nghĩ: điều gì giữ họ vững? Điều gì thử thách đức tin bạn hôm nay?',tags:['#DũngCảm','#HySinh','#CầuNguyện'],sc:{courage:5,charity:3,leadership:3,wisdom:2,sacrifice:5,prayer:5,creativity:1,peace:3,humility:4,mission:3}},
+  {name:'Thánh Maximilian Kolbe',title:'Vị tử đạo của tình yêu',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Fr.Maximilian_Kolbe_in_1936.jpg/330px-Fr.Maximilian_Kolbe_in_1936.jpg',quote:'"Chỉ có tình yêu mới có thể chinh phục thù hận."',desc:'Linh mục Ba Lan tình nguyện chết thay cho người cha có gia đình trong trại Auschwitz. Câu chuyện ngài là minh chứng về tình yêu hy sinh không điều kiện.',contemp:'Hôm nay từ bỏ điều bạn muốn để nhường cho người khác. Làm trong im lặng, không cần ai biết.',tags:['#HySinh','#DũngCảm','#YêuThương'],sc:{courage:5,charity:4,leadership:3,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:3,humility:4,mission:3}},
+  {name:'Thánh Têrêsa Hài Đồng Giêsu',title:'Con đường thơ ấu thiêng liêng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Teresa-de-Lisieux.jpg/330px-Teresa-de-Lisieux.jpg',quote:'"Ơn gọi của tôi là Tình Yêu."',desc:'Không làm phép lạ vĩ đại — nhưng làm mọi việc nhỏ với tình yêu to lớn. Con đường nhỏ bé của Têrêsa trở thành ánh sáng cho hàng triệu tâm hồn.',contemp:'Chọn một việc nhỏ nhất hôm nay — rửa chén, chào hỏi, nhặt rác — và làm với tất cả tình yêu.',tags:['#CầuNguyện','#KhiêmNhường','#YêuThương'],sc:{courage:3,charity:4,leadership:2,wisdom:3,sacrifice:4,prayer:5,creativity:3,peace:4,humility:5,mission:3}},
+  {name:'Thánh Gioan Thánh Giá',title:'Bậc thầy chiêm niệm',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Zurbar%C3%A1n_%28atribuido%29-John_of_the_Cross-1656.jpg/330px-Zurbar%C3%A1n_%28atribuido%29-John_of_the_Cross-1656.jpg',quote:'"Trong buổi chiều cuộc đời, bạn sẽ bị xét xử về tình yêu."',desc:'Nhà thơ và thần học gia chiêm niệm vĩ đại, viết về "Đêm tối tâm hồn" — hành trình qua bóng tối để đến ánh sáng Thiên Chúa.',contemp:'Tắt điện thoại 20 phút. Ngồi yên trong thinh lặng. Không cầu nguyện bằng lời — chỉ hiện diện trước Chúa.',tags:['#CầuNguyện','#HySinh','#KhiêmNhường'],sc:{courage:4,charity:3,leadership:2,wisdom:4,sacrifice:4,prayer:5,creativity:3,peace:3,humility:5,mission:2}},
+  {name:'Thánh Hildegard of Bingen',title:'Nhà tiên tri sáng tạo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Hildegard_von_Bingen.jpg/330px-Hildegard_von_Bingen.jpg',quote:'"Tôi, một ngọn lửa nhỏ, chiếu sáng nhờ ánh sáng của Thiên Chúa."',desc:'Nhà thần học, nhạc sĩ, họa sĩ và thầy thuốc thế kỷ 12. Hildegard tin mọi tài năng sáng tạo đều là hơi thở của Thiên Chúa trong con người.',contemp:'Hãy sáng tạo điều gì đó vì Chúa hôm nay — vẽ tranh, viết thơ, hay hát thánh ca. Không cần hoàn hảo.',tags:['#SángTạo','#ThôngThái','#CầuNguyện'],sc:{courage:3,charity:3,leadership:3,wisdom:4,sacrifice:2,prayer:4,creativity:5,peace:3,humility:3,mission:2}},
+  {name:'Thánh Martin de Porres',title:'Người anh em của mọi người',photo:'https://upload.wikimedia.org/wikipedia/commons/2/29/San_Martin_de_Porres_huaycan.jpg',quote:'"Hãy yêu thương người nghèo — đó là đường ngắn nhất đến với Thiên Chúa."',desc:'Sinh ra trong bất bình đẳng nhưng trở thành biểu tượng bình an và yêu thương. Martin không bao giờ phân biệt sang hèn.',contemp:'Hôm nay hãy làm hòa với người bạn đang xích mích hoặc mang nụ cười cho ai đó đang buồn.',tags:['#BìnhAn','#YêuThương','#KhiêmNhường'],sc:{courage:2,charity:5,leadership:2,wisdom:2,sacrifice:4,prayer:4,creativity:3,peace:5,humility:5,mission:2}},
+  {name:'Thánh Phanxicô Xaviê',title:'Sứ giả Châu Á',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Franciscus_de_Xabier.jpg/330px-Franciscus_de_Xabier.jpg',quote:'"Ngọn lửa nào đã thiêu đốt trái tim tôi khi thấy linh hồn chưa biết Chúa!"',desc:'Nhà truyền giáo vĩ đại nhất sau thời Tông Đồ, mang Tin Mừng đến Ấn Độ, Nhật Bản và khắp Châu Á.',contemp:'Cầu nguyện cho một người bạn biết chưa có đức tin. Xin Chúa dùng bạn như nhịp cầu đến với họ.',tags:['#TruyềnGiáo','#DũngCảm','#HySinh'],sc:{courage:5,charity:3,leadership:4,wisdom:3,sacrifice:5,prayer:3,creativity:2,peace:2,humility:2,mission:5}},
+  {name:'Thánh Phaolô Tông Đồ',title:'Ngọn lửa Tin Mừng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Fresco_of_Saint_Paul_at_Ephesus.jpg/330px-Fresco_of_Saint_Paul_at_Ephesus.jpg',quote:'"Tôi có thể làm mọi sự trong Đấng ban sức mạnh cho tôi."',desc:'Từ kẻ bách hại Kitô hữu thành nhà truyền giáo vĩ đại nhất. Phaolô nhắc nhở: không ai quá xa để được Thiên Chúa biến đổi.',contemp:'Nhớ lại khoảnh khắc Chúa thay đổi bạn. Chia sẻ câu chuyện đó với ít nhất một người trong tuần này.',tags:['#TruyềnGiáo','#DũngCảm','#LãnhĐạo'],sc:{courage:5,charity:3,leadership:5,wisdom:4,sacrifice:4,prayer:3,creativity:3,peace:2,humility:2,mission:5}},
+  {name:'Thánh Giuse',title:'Người cha âm thầm',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Guido_Reni_-_St_Joseph_with_the_Infant_Jesus_-_WGA19304.jpg/330px-Guido_Reni_-_St_Joseph_with_the_Infant_Jesus_-_WGA19304.jpg',quote:'"Đừng sợ, cứ đón Maria về nhà."',desc:'Người cha âm thầm không có lời nào ghi lại — nhưng trung tín trong từng bước đi. Giuse dạy rằng trung thành trong bóng tối là đức hạnh cao quý nhất.',contemp:'Hôm nay thực hiện một việc trong gia đình mà không ai yêu cầu và không cần ai ghi nhận.',tags:['#KhiêmNhường','#HySinh','#BìnhAn'],sc:{courage:4,charity:3,leadership:2,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:5,humility:5,mission:2}},
+  {name:'Thánh Gioan Tẩy Giả',title:'Người dọn đường',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Accademia_-_St_John_the_Baptist_by_Titian_Cat314.jpg/330px-Accademia_-_St_John_the_Baptist_by_Titian_Cat314.jpg',quote:'"Người phải lớn lên, còn tôi phải nhỏ lại."',desc:'Sống trong sa mạc, rao giảng sự hoán cải không khoan nhượng. Gioan dọn đường cho Đấng Cứu Thế với dũng cảm không sợ cường quyền.',contemp:'Xem xét cuộc sống: điều gì cần "dọn dẹp" để Chúa có chỗ? Hãy thống hối một điều cụ thể hôm nay.',tags:['#DũngCảm','#TruyềnGiáo','#HySinh'],sc:{courage:5,charity:2,leadership:3,wisdom:3,sacrifice:5,prayer:5,creativity:2,peace:2,humility:3,mission:4}},
+  {name:'Thánh Maria Mađalêna',title:'Tông đồ của các Tông đồ',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/TINTORETTO_-_Magdalena_penitente_%28Musei_Capitolini%2C_Roma%2C_1598-1602%29_-_copia.jpg/330px-TINTORETTO_-_Magdalena_penitente_%28Musei_Capitolini%2C_Roma%2C_1598-1602%29_-_copia.jpg',quote:'"Tôi đã thấy Chúa!" — người đầu tiên loan báo Phục Sinh.',desc:'Được Chúa thứ tha và trở thành chứng nhân đầu tiên của Phục Sinh. Tình yêu trung thành của bà biến đổi hoàn toàn cuộc đời.',contemp:'Nghĩ đến ơn lành Chúa ban mà bạn đã quên tạ ơn. Hôm nay cầu nguyện lời tạ ơn đó.',tags:['#YêuThương','#CầuNguyện','#KhiêmNhường'],sc:{courage:3,charity:5,leadership:2,wisdom:3,sacrifice:3,prayer:5,creativity:3,peace:4,humility:4,mission:3}},
+  {name:'Thánh Đa Minh',title:'Người rao giảng sự thật',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/SaintDominic.jpg/330px-SaintDominic.jpg',quote:'"Hãy nói về Chúa hay nói với Chúa — đừng lãng phí lời nói."',desc:'Sáng lập Dòng Giảng Thuyết, dùng kiến thức bảo vệ đức tin. Đa Minh tin chân lý được rao giảng bằng tình yêu có sức mạnh thay đổi thế giới.',contemp:'Hôm nay chia sẻ một điều về đức tin — câu Kinh Thánh hay chuyện về Thánh. Không cần dài, chỉ cần thành tâm.',tags:['#TruyềnGiáo','#ThôngThái','#LãnhĐạo'],sc:{courage:3,charity:3,leadership:4,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:5}},
+  {name:'Thánh Inhaxiô Loyola',title:'Người lính của Đức Kitô',photo:'https://upload.wikimedia.org/wikipedia/commons/f/f9/Ignatius_Loyola.jpg',quote:'"Làm mọi sự vì vinh quang cao hơn của Thiên Chúa."',desc:'Cựu chiến binh trở thành nhà lãnh đạo tinh thần, sáng lập Dòng Tên và xây dựng hệ thống linh thao giúp hàng triệu người khám phá ơn gọi.',contemp:'Thử linh thao ngắn: trong 5 phút xem xét ngày hôm nay — khoảnh khắc nào gần Chúa nhất? Xa nhất? Ghi lại.',tags:['#LãnhĐạo','#ThôngThái','#DũngCảm'],sc:{courage:5,charity:3,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:5}},
+  {name:'Thánh Catarina Siena',title:'Tiến sĩ Giáo Hội',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Giovanni_Battista_Tiepolo_096.jpg/330px-Giovanni_Battista_Tiepolo_096.jpg',quote:'"Hãy là người bạn muốn trở thành."',desc:'Người phụ nữ không biết chữ nhưng thuyết phục Giáo Hoàng trở về Roma. Tình yêu dũng cảm và cầu nguyện kiên trì có thể thay đổi cả thế giới.',contemp:'Nhìn vào vấn đề bạn thường than thở. Hôm nay thay vì than, hãy cầu nguyện cụ thể và nghĩ bạn có thể làm gì.',tags:['#DũngCảm','#ThôngThái','#LãnhĐạo'],sc:{courage:5,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:4}},
+  {name:'Thánh Gioan Bosco',title:'Cha của giới trẻ',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Don_Bosco_%40_Torino%2C_1880_%28original%29.jpg/330px-Don_Bosco_%40_Torino%2C_1880_%28original%29.jpg',quote:'"Bạn muốn tôi thương yêu các em không? Thì tôi đã và đang yêu thương các em hết lòng."',desc:'Dành cả đời cứu vớt thanh thiếu niên nghèo, bị bỏ rơi. Gioan Bosco tin rằng yêu thương và giáo dục là chìa khóa biến đổi xã hội.',contemp:'Hôm nay dành thời gian cho một bạn trẻ trong gia đình hay hàng xóm — lắng nghe, khích lệ và yêu thương họ.',tags:['#YêuThương','#LãnhĐạo','#TruyềnGiáo'],sc:{courage:3,charity:5,leadership:5,wisdom:3,sacrifice:4,prayer:3,creativity:4,peace:3,humility:3,mission:5}},
+  {name:'Thánh Antôn Padua',title:'Tiến sĩ Tin Mừng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Francisco_de_Zurbar%C3%A1n_-_Sto_Antonio_de_Padua.jpg/330px-Francisco_de_Zurbar%C3%A1n_-_Sto_Antonio_de_Padua.jpg',quote:'"Lời rao giảng không có lời cầu nguyện giống như hạt giống không có nước."',desc:'Nhà giảng thuyết lỗi lạc với tài năng thiên phú, dùng lời Chúa chữa lành tâm hồn. Thánh Antôn được nhiều người yêu mến vì lòng nhân hậu và khiêm tốn.',contemp:'Đọc một đoạn Kinh Thánh nhỏ hôm nay và tìm cách chia sẻ ý nghĩa của nó với một người thân.',tags:['#ThôngThái','#KhiêmNhường','#TruyềnGiáo'],sc:{courage:3,charity:4,leadership:3,wisdom:5,sacrifice:3,prayer:5,creativity:3,peace:3,humility:5,mission:4}},
+  {name:'Thánh Têrêsa Avila',title:'Bậc thầy cầu nguyện',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Santa_Teresa_de_Jes%C3%BAs_%28Museo_del_Prado%29.jpg/330px-Santa_Teresa_de_Jes%C3%BAs_%28Museo_del_Prado%29.jpg',quote:'"Đừng để điều gì xáo trộn bạn, đừng để điều gì làm bạn sợ hãi."',desc:'Nhà huyền nhiệm vĩ đại và nhà cải cách Dòng Cát Minh. Têrêsa Avila dạy rằng cầu nguyện là cuộc trò chuyện thân mật giữa người bạn với Thiên Chúa.',contemp:'Hôm nay thử cầu nguyện theo cách mới: thay vì đọc kinh, hãy trò chuyện tự nhiên với Chúa như với người bạn thân.',tags:['#CầuNguyện','#ThôngThái','#LãnhĐạo'],sc:{courage:4,charity:3,leadership:4,wisdom:5,sacrifice:3,prayer:5,creativity:4,peace:3,humility:4,mission:3}},
+  {name:'Thánh Gioan Viannê',title:'Cha sở thành Ars',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/S%C3%A3o_Jo%C3%A3o_Maria_Vianney.png/330px-S%C3%A3o_Jo%C3%A3o_Maria_Vianney.png',quote:'"Linh mục là tình yêu của Trái tim Chúa Giêsu."',desc:'Vị linh mục nghèo ở làng nhỏ nước Pháp, thu hút hàng chục nghìn người hành hương mỗi năm bằng tâm hồn thánh thiện và bác ái.',contemp:'Hôm nay nhớ cầu nguyện cho vị linh mục của giáo xứ bạn — họ cần lời cầu nguyện hơn bạn nghĩ.',tags:['#CầuNguyện','#HySinh','#KhiêmNhường'],sc:{courage:3,charity:4,leadership:2,wisdom:4,sacrifice:5,prayer:5,creativity:2,peace:4,humility:5,mission:3}},
+  {name:'Thánh Faustina Kowalska',title:'Tông đồ Lòng Thương Xót',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Maria_Faustyna_Kowalska.jpg/330px-Maria_Faustyna_Kowalska.jpg',quote:'"Lạy Chúa Giêsu, con tín thác vào Chúa."',desc:'Nữ tu Ba Lan nhận được thông điệp về Lòng Thương Xót Chúa và truyền bá ra khắp thế giới. Nhật ký tâm linh của bà đã đổi thay hàng triệu cuộc đời.',contemp:'Đọc lời nguyện: "Lạy Chúa Giêsu, con tín thác vào Chúa" — và thực sự trao phó mọi lo âu của bạn cho Chúa hôm nay.',tags:['#CầuNguyện','#BìnhAn','#SángTạo'],sc:{courage:3,charity:3,leadership:2,wisdom:3,sacrifice:4,prayer:5,creativity:4,peace:5,humility:4,mission:4}},
+  {name:'Thánh Padre Pio',title:'Linh mục mang dấu thánh',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Padre_Pio_portraitFXD.jpg/330px-Padre_Pio_portraitFXD.jpg',quote:'"Cầu nguyện, hy vọng và đừng lo lắng."',desc:'Linh mục Dòng Capuchin mang dấu thương tích Chúa Giêsu 50 năm, dành cả ngày trong toà giải tội và cầu nguyện cho người bệnh.',contemp:'Hôm nay đến toà giải tội hoặc dành 10 phút thống hối và tha thứ — cho người khác và cho chính mình.',tags:['#HySinh','#CầuNguyện','#YêuThương'],sc:{courage:4,charity:4,leadership:2,wisdom:3,sacrifice:5,prayer:5,creativity:2,peace:4,humility:4,mission:3}},
+  {name:'Thánh Maria Goretti',title:'Tử đạo của trong sạch',photo:'https://upload.wikimedia.org/wikipedia/commons/3/38/Maria_Goretti.jpg',quote:'"Con tha thứ cho anh và muốn anh được lên Thiên Đàng cùng với con."',desc:'Thiếu nữ 12 tuổi hy sinh mạng sống để bảo vệ đức trinh khiết. Lời tha thứ cuối cùng của bà đã biến đổi tên sát nhân thành người hoán cải.',contemp:'Hôm nay tha thứ cho ai đó đã xúc phạm bạn — không chờ họ xin lỗi. Tha thứ là quà bạn tặng cho chính mình.',tags:['#DũngCảm','#HySinh','#BìnhAn'],sc:{courage:5,charity:4,leadership:1,wisdom:2,sacrifice:5,prayer:4,creativity:1,peace:4,humility:4,mission:2}},
+  {name:'Thánh Edith Stein',title:'Nữ Tiến sĩ và Tử đạo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Edith_Stein_%28ca._1938-1939%29.jpg/330px-Edith_Stein_%28ca._1938-1939%29.jpg',quote:'"Ai tìm kiếm chân lý là đang tìm kiếm Thiên Chúa, dù họ có biết hay không."',desc:'Triết gia Do Thái trở thành nữ tu Cát Minh, chết trong trại Auschwitz. Edith Stein dạy rằng trí tuệ và đức tin không mâu thuẫn nhau.',contemp:'Đọc một cuốn sách hay bài viết về đức tin hôm nay. Để tâm trí và trái tim cùng đồng hành trên con đường thiêng liêng.',tags:['#ThôngThái','#HySinh','#DũngCảm'],sc:{courage:5,charity:3,leadership:2,wisdom:5,sacrifice:5,prayer:4,creativity:3,peace:2,humility:4,mission:3}},
+  {name:'Thánh Bênêđictô',title:'Cha của đời đan tu Tây Phương',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Memling%2C_Trittico_di_Benedetto_Portinari%2C_San_Benedetto.jpg/330px-Memling%2C_Trittico_di_Benedetto_Portinari%2C_San_Benedetto.jpg',quote:'"Hãy cầu nguyện và làm việc." (Ora et Labora)',desc:'Sáng lập đời đan tu phương Tây với quy luật sống cân bằng: cầu nguyện, làm việc và nghỉ ngơi. Bênêđictô tạo ra trung tâm văn hóa và tâm linh cho châu Âu.',contemp:'Hôm nay thực hành "Ora et Labora": làm việc như lời cầu nguyện, cầu nguyện như công việc. Mỗi việc làm đều có giá trị thánh thiêng.',tags:['#CầuNguyện','#BìnhAn','#LãnhĐạo'],sc:{courage:3,charity:3,leadership:5,wisdom:4,sacrifice:3,prayer:5,creativity:3,peace:5,humility:4,mission:3}},
+  {name:'Thánh Vincensô Phaolô',title:'Người phục vụ người nghèo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Vincent_de_Paul.PNG/330px-Vincent_de_Paul.PNG',quote:'"Chúng ta yêu thương Thiên Chúa bằng đôi tay của chúng ta và bằng mồ hôi của chúng ta."',desc:'Tổ chức mạng lưới bác ái rộng lớn, phục vụ người nghèo, bệnh nhân và tù nhân. Vincensô dạy rằng đức ái cụ thể hơn bất kỳ lời hoa mỹ nào.',contemp:'Liên hệ một tổ chức từ thiện hoặc nhà thờ gần bạn để hỏi xem bạn có thể đóng góp gì trong tháng này.',tags:['#YêuThương','#LãnhĐạo','#HySinh'],sc:{courage:3,charity:5,leadership:5,wisdom:3,sacrifice:4,prayer:3,creativity:3,peace:4,humility:4,mission:5}},
+  {name:'Thánh Anrê Tông Đồ',title:'Người đầu tiên được gọi',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Rubens_apostel_andreas_grt.jpg/330px-Rubens_apostel_andreas_grt.jpg',quote:'"Tôi đã gặp Đấng Mêsia!" — lời chia sẻ đầu tiên của Anrê với anh mình.',desc:'Người đầu tiên được Chúa gọi, Anrê ngay lập tức dẫn anh mình Phêrô đến với Chúa. Trọn cuộc đời ngài là lời mời gọi người khác đến gặp Chúa.',contemp:'Hôm nay hãy giới thiệu một người bạn đến với Chúa — không cần bài giảng dài, chỉ cần một câu chân thành.',tags:['#TruyềnGiáo','#DũngCảm','#YêuThương'],sc:{courage:4,charity:4,leadership:3,wisdom:3,sacrifice:4,prayer:3,creativity:2,peace:3,humility:3,mission:5}},
+  {name:'Thánh Stêphanô',title:'Vị tử đạo đầu tiên',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/St-stephen.jpg/330px-St-stephen.jpg',quote:'"Lạy Chúa, xin đừng chấp tội này cho họ."',desc:'Phó tế đầu tiên và tử đạo đầu tiên của Giáo Hội. Trong lúc bị ném đá, Stêphanô cầu nguyện cho kẻ thù — gương mẫu tha thứ tuyệt vời nhất.',contemp:'Cầu nguyện cho một người đang làm khó bạn. Xin Chúa chúc lành cho họ — đây là điều khó nhất và đẹp nhất bạn có thể làm.',tags:['#DũngCảm','#HySinh','#BìnhAn'],sc:{courage:5,charity:4,leadership:2,wisdom:3,sacrifice:5,prayer:4,creativity:1,peace:4,humility:4,mission:3}},
+  {name:'Thánh Grêgôriô Cả',title:'Tôi tớ của các tôi tớ Thiên Chúa',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Gregory_the_Great_with_the_Holy_Spirit.jpg/330px-Gregory_the_Great_with_the_Holy_Spirit.jpg',quote:'"Ai không muốn lãnh đạo người khác mới xứng đáng lãnh đạo."',desc:'Giáo Hoàng vĩ đại tổ chức lại Giáo Hội, soạn thảo phụng vụ thánh nhạc. Grêgôriô tự gọi mình là "tôi tớ của các tôi tớ" — mẫu mực lãnh đạo khiêm tốn.',contemp:'Hôm nay phục vụ người khác theo một cách bạn thường không làm — và không nói với ai về điều đó.',tags:['#LãnhĐạo','#KhiêmNhường','#SángTạo'],sc:{courage:3,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:4,peace:3,humility:5,mission:4}},
+  {name:'Thánh Oscar Romero',title:'Tiếng nói của người bị bỏ quên',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Monse%C3%B1or_Romero_%28colour%29.jpg/330px-Monse%C3%B1or_Romero_%28colour%29.jpg',quote:'"Giáo Hội phải bảo vệ người nghèo và người bị áp bức."',desc:'Tổng Giám mục El Salvador bị ám sát khi đang dâng lễ vì dám lên tiếng bảo vệ người nghèo. Romero chứng minh đức tin không thể im lặng trước bất công.',contemp:'Tìm hiểu một vấn đề bất công trong xã hội hôm nay. Cầu nguyện cho những người bị thiệt thòi và suy nghĩ bạn có thể làm gì.',tags:['#DũngCảm','#LãnhĐạo','#YêuThương'],sc:{courage:5,charity:5,leadership:4,wisdom:4,sacrifice:5,prayer:4,creativity:2,peace:3,humility:3,mission:5}},
+  {name:'Thánh Charles Lwanga',title:'Tử đạo Uganda',photo:'https://upload.wikimedia.org/wikipedia/commons/f/f0/Karoli_Lwanga_and_his_followers.jpg',quote:'"Tôi vui lòng chết vì đức tin Kitô giáo."',desc:'Thanh niên Uganda dẫn dắt nhóm bạn trẻ đứng vững trong đức tin dù bị hành quyết. Charles Lwanga là gương mẫu cho giới trẻ Công Giáo toàn thế giới.',contemp:'Hôm nay chia sẻ đức tin của bạn với một người bạn trẻ — một câu chuyện, một câu Kinh Thánh, hay chỉ một nụ cười.',tags:['#DũngCảm','#HySinh','#TruyềnGiáo'],sc:{courage:5,charity:3,leadership:4,wisdom:2,sacrifice:5,prayer:4,creativity:2,peace:3,humility:3,mission:4}},
+  {name:'Thánh Damien xứ Molokai',title:'Cha của người phong cùi',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Father_Damien%2C_photograph_by_William_Brigham.jpg/330px-Father_Damien%2C_photograph_by_William_Brigham.jpg',quote:'"Chúng ta là những kẻ phong cùi." — lời ngài nói khi bị lây bệnh.',desc:'Linh mục người Bỉ tình nguyện đến đảo Molokai phục vụ người phong cùi và cuối cùng chết vì cùng căn bệnh đó. Tình yêu của ngài không có giới hạn.',contemp:'Hôm nay dành thời gian cho người bệnh, người già hay ai đó đang cô đơn nhất trong cuộc sống của bạn.',tags:['#HySinh','#YêuThương','#DũngCảm'],sc:{courage:5,charity:5,leadership:2,wisdom:2,sacrifice:5,prayer:4,creativity:1,peace:3,humility:4,mission:4}},
+  {name:'Thánh Cecilia',title:'Nữ bổn mạng âm nhạc',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Guercino_-_St._Cecilia_-_Google_Art_Project.jpg/330px-Guercino_-_St._Cecilia_-_Google_Art_Project.jpg',quote:'"Trong tim tôi, con hát lên những bài ca về tình yêu Thiên Chúa."',desc:'Thiếu nữ La Mã dùng âm nhạc để phục vụ Thiên Chúa và chịu tử đạo vì đức tin. Cecilia dạy rằng nghệ thuật là ngôn ngữ của linh hồn.',contemp:'Hôm nay nghe hoặc hát một bài thánh ca. Để âm nhạc dẫn trái tim bạn vào cầu nguyện.',tags:['#SángTạo','#HySinh','#CầuNguyện'],sc:{courage:4,charity:3,leadership:2,wisdom:3,sacrifice:5,prayer:5,creativity:5,peace:3,humility:4,mission:2}},
+  {name:'Thánh Perpetua',title:'Người mẹ tử đạo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Perpetua%2C_Felicitas%2C_Revocatus%2C_Saturninus_and_Secundulus_%28Menologion_of_Basil_II%29.jpg/330px-Perpetua%2C_Felicitas%2C_Revocatus%2C_Saturninus_and_Secundulus_%28Menologion_of_Basil_II%29.jpg',quote:'"Đức tin mạnh hơn tình thân xác."',desc:'Quý cô trẻ Carthage chọn chết vì đức tin dù mang con thơ. Nhật ký tử đạo của bà là tài liệu Kitô giáo sớm nhất được viết bởi phụ nữ.',contemp:'Hôm nay đọc một đoạn về vị thánh tử đạo và tự hỏi: điều gì trong cuộc sống tôi đang đòi hỏi tôi can đảm vì đức tin?',tags:['#DũngCảm','#HySinh','#KhiêmNhường'],sc:{courage:5,charity:3,leadership:2,wisdom:3,sacrifice:5,prayer:4,creativity:3,peace:3,humility:4,mission:3}},
+  {name:'Thánh Kateri Tekakwitha',title:'Hoa huệ của người Mohawk',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/CatherinaeTekakwithaVirginis1690.jpg/330px-CatherinaeTekakwithaVirginis1690.jpg',quote:'"Tôi đã quyết định: Chúa Giêsu là tình yêu của tôi."',desc:'Người phụ nữ bản địa đầu tiên được phong hiển thánh. Kateri vượt qua sự kỳ thị của cộng đồng để sống trọn vẹn đức tin Công Giáo.',contemp:'Hôm nay sống đức tin của bạn dù xung quanh không ủng hộ. Can đảm sống khác biệt vì Chúa.',tags:['#DũngCảm','#CầuNguyện','#KhiêmNhường'],sc:{courage:4,charity:3,leadership:2,wisdom:3,sacrifice:4,prayer:5,creativity:2,peace:4,humility:5,mission:3}},
+  {name:'Thánh Clara Assisi',title:'Cây gương của các nữ tu',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Simone_Martini_047.jpg/330px-Simone_Martini_047.jpg',quote:'"Chúng ta sở hữu những gì chúng ta không trao đi."',desc:'Người bạn tinh thần của Thánh Phanxicô, sáng lập Dòng Nữ Clarist. Clara chọn sống trong cảnh nghèo tuyệt đối để hoàn toàn thuộc về Thiên Chúa.',contemp:'Hôm nay trao đi điều gì đó bạn quý — thời gian, tiền bạc hay sự chú ý — cho người cần hơn bạn.',tags:['#KhiêmNhường','#BìnhAn','#CầuNguyện'],sc:{courage:3,charity:4,leadership:3,wisdom:3,sacrifice:5,prayer:5,creativity:3,peace:5,humility:5,mission:2}},
+  {name:'Thánh Philípphê Néri',title:'Vị Thánh của niềm vui',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/FNeri.gif/330px-FNeri.gif',quote:'"Hãy vui lên — tôi không muốn thánh thiêng mà không có niềm vui."',desc:'Linh mục người Florentine nổi tiếng với tính hóm hỉnh và niềm vui sống. Philípphê tin rằng niềm vui là dấu hiệu của sự thánh thiện thật sự.',contemp:'Hôm nay hãy cười và gieo niềm vui cho người xung quanh. Niềm vui của bạn là ơn Chúa ban và là sứ điệp Tin Mừng sống động.',tags:['#SángTạo','#YêuThương','#BìnhAn'],sc:{courage:3,charity:5,leadership:3,wisdom:3,sacrifice:2,prayer:4,creativity:5,peace:5,humility:4,mission:4}},
+  {name:'Thánh Giêrônimô',title:'Tiến sĩ Kinh Thánh',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/MatthiasStom-SaintJerome-Nantes.jpg/330px-MatthiasStom-SaintJerome-Nantes.jpg',quote:'"Không biết Kinh Thánh là không biết Đức Kitô."',desc:'Học giả lỗi lạc dịch Kinh Thánh sang tiếng La tinh (bản Vulgata). Dù tính khí nóng nảy, Giêrônimô dành cả đời phục vụ Lời Chúa với lòng say mê.',contemp:'Hôm nay đọc chậm 5 câu Kinh Thánh. Không chỉ đọc — hãy ngẫm nghĩ và để Lời Chúa nói với bạn.',tags:['#ThôngThái','#SángTạo','#HySinh'],sc:{courage:4,charity:2,leadership:2,wisdom:5,sacrifice:4,prayer:4,creativity:5,peace:2,humility:2,mission:3}},
+  {name:'Thánh Gioan Kim Khẩu',title:'Nhà hùng biện vĩ đại',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Johnchrysostom.jpg/330px-Johnchrysostom.jpg',quote:'"Hãy coi sóc người nghèo — đó là bàn thờ sống động của Đức Kitô."',desc:'Tổng Giám mục Constantinople nổi tiếng với những bài giảng hùng hồn về công bằng xã hội. Ngài bị lưu đày vì dám phê bình sự xa hoa của hoàng cung.',contemp:'Hôm nay lắng nghe một bài giảng hay. Để Lời Chúa thay đổi cách bạn nhìn thế giới và người nghèo xung quanh.',tags:['#LãnhĐạo','#DũngCảm','#ThôngThái'],sc:{courage:5,charity:4,leadership:4,wisdom:5,sacrifice:4,prayer:3,creativity:4,peace:2,humility:2,mission:4}},
+  {name:'Thánh Phanxicô Sales',title:'Tiến sĩ của tình yêu',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Mother_Teresa_1.jpg/330px-Mother_Teresa_1.jpg',quote:'"Bạn có thể bắt nhiều ruồi hơn bằng một thìa mật ong hơn một thùng giấm."',desc:'Giám mục nhân từ nổi tiếng với sự kiên nhẫn và lòng mẫu tử. Phanxicô Sales dạy rằng sự thánh thiện không phải chỉ dành cho tu sĩ mà cho mọi người.',contemp:'Hôm nay phản ứng với người gây khó chịu bằng sự kiên nhẫn và dịu dàng thay vì nóng giận. Đây là thực hành thánh thiện của ngài.',tags:['#BìnhAn','#ThôngThái','#YêuThương'],sc:{courage:3,charity:5,leadership:4,wisdom:5,sacrifice:3,prayer:4,creativity:4,peace:5,humility:4,mission:4}},
+  {name:'Thánh Luca Thánh Sử',title:'Người kể chuyện của Tin Mừng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Philip_Fruytiers_-_St._Francis_of_Assisi.jpg/330px-Philip_Fruytiers_-_St._Francis_of_Assisi.jpg',quote:'"Hôm nay Đấng Cứu Thế đã sinh ra cho anh em trong thành Đavít."',desc:'Thầy thuốc và nghệ sĩ viết Tin Mừng với ngòi bút nhân văn sâu sắc nhất. Luca đặc biệt chú ý đến phụ nữ, người nghèo và lòng thương xót của Thiên Chúa.',contemp:'Hôm nay dùng tài năng của bạn — viết, vẽ, nấu ăn, hay làm bất cứ điều gì — để phục vụ người khác và tôn vinh Thiên Chúa.',tags:['#SángTạo','#YêuThương','#TruyềnGiáo'],sc:{courage:3,charity:4,leadership:2,wisdom:4,sacrifice:3,prayer:3,creativity:5,peace:4,humility:3,mission:4}},
+  {name:'Thánh Mátthêu Thánh Sử',title:'Người thu thuế được gọi',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/St-thomas-aquinasFXD.jpg/330px-St-thomas-aquinasFXD.jpg',quote:'"Đứng dậy, theo Ta." — lời Chúa gọi Mátthêu.',desc:'Từ người thu thuế bị khinh bỉ đến Tông Đồ và Thánh Sử. Mátthêu nhắc nhở rằng Chúa gọi mỗi người từ chỗ họ đang đứng, không phải từ nơi họ muốn đến.',contemp:'Hôm nay nhớ lại khoảnh khắc Chúa gọi bạn. Trả lời "Vâng" với Ngài một lần nữa trong bất kỳ việc nhỏ nào.',tags:['#TruyềnGiáo','#ThôngThái','#KhiêmNhường'],sc:{courage:4,charity:3,leadership:3,wisdom:4,sacrifice:3,prayer:3,creativity:4,peace:3,humility:3,mission:5}},
+  {name:'Thánh Giacôbê Tông Đồ',title:'Người đầu tiên tử đạo trong Nhóm Mười Hai',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Saint_Peter-Sinai_%286th_Century%29_Crop.jpg/330px-Saint_Peter-Sinai_%286th_Century%29_Crop.jpg',quote:'"Chúng con có thể uống chén Thầy sẽ uống." — lời Giacôbê với Chúa.',desc:'Tông Đồ đầu tiên bị giết vì đức tin, anh của Gioan. Giacôbê thực hiện đúng lời hứa với Chúa — uống cùng chén với Ngài.',contemp:'Hôm nay nhận lấy một thử thách hay khó khăn như "chén đắng" Chúa gửi đến. Đón nhận nó trong bình an.',tags:['#DũngCảm','#HySinh','#TruyềnGiáo'],sc:{courage:5,charity:3,leadership:3,wisdom:3,sacrifice:5,prayer:3,creativity:2,peace:3,humility:3,mission:4}},
+  {name:'Thánh Tôma Tông Đồ',title:'Từ nghi ngờ đến tuyên xưng',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Zurbar%C3%A1n_%28atribuido%29-John_of_the_Cross-1656.jpg/330px-Zurbar%C3%A1n_%28atribuido%29-John_of_the_Cross-1656.jpg',quote:'"Lạy Chúa của con và là Thiên Chúa của con!"',desc:'Từ người hay nghi ngờ đến vị Tông Đồ truyền giáo đến tận Ấn Độ. Tôma dạy rằng nghi ngờ thành thật có thể dẫn đến đức tin sâu sắc hơn.',contemp:'Hôm nay mang một nghi ngờ về đức tin đến Chúa trong cầu nguyện. Đặt câu hỏi thành thật — Chúa không sợ câu hỏi của bạn.',tags:['#ThôngThái','#DũngCảm','#TruyềnGiáo'],sc:{courage:4,charity:3,leadership:2,wisdom:4,sacrifice:4,prayer:3,creativity:3,peace:3,humility:3,mission:5}},
+  {name:'Thánh Bartholomê',title:'Tông đồ trung thành',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Rubens_apostel_andreas_grt.jpg/330px-Rubens_apostel_andreas_grt.jpg',quote:'"Thầy biết anh trước khi Philipphê gọi anh, khi anh còn ở dưới cây vả."',desc:'Người được Chúa nhìn thấy trước khi gặp, trung thành đến cùng. Bartholomê đã mang Tin Mừng đến Armenia và chịu tử đạo dã man.',contemp:'Hôm nay tin rằng Thiên Chúa đã biết bạn, nhìn thấy bạn từ trước khi bạn tìm kiếm Ngài. Sống trong niềm tin được yêu thương đó.',tags:['#TruyềnGiáo','#HySinh','#KhiêmNhường'],sc:{courage:4,charity:3,leadership:2,wisdom:3,sacrifice:4,prayer:3,creativity:2,peace:3,humility:4,mission:5}},
+  {name:'Thánh Matthia Tông Đồ',title:'Người được chọn thay Giuda',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Saint_Peter-Sinai_%286th_Century%29_Crop.jpg/330px-Saint_Peter-Sinai_%286th_Century%29_Crop.jpg',quote:'"Ngài biết lòng dạ mọi người — xin chỉ cho biết ai trong hai người này được chọn."',desc:'Được chọn theo tiêu chuẩn của Chúa, không phải theo ý người. Matthia dạy rằng ơn gọi đến từ Thiên Chúa, không phải từ tài năng hay địa vị.',contemp:'Hôm nay đặt mình trong tay Chúa hoàn toàn. Xin Ngài chỉ cho biết ý Ngài, không phải ý bạn.',tags:['#CầuNguyện','#KhiêmNhường','#TruyềnGiáo'],sc:{courage:3,charity:3,leadership:2,wisdom:3,sacrifice:3,prayer:4,creativity:2,peace:4,humility:5,mission:4}},
+  {name:'Thánh Elizabeth Hungary',title:'Người mẹ của người nghèo',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Simone_Martini_047.jpg/330px-Simone_Martini_047.jpg',quote:'"Những ai có thể, hãy trao đi tất cả vì người nghèo."',desc:'Công chúa từ bỏ cuộc sống vương giả để phục vụ người nghèo bệnh tật. Elizabeth Hungary là gương mẫu về sự kết hợp giữa đời sống hoàng gia và đức ái Kitô giáo.',contemp:'Hôm nay trao đi phần đáng kể của thu nhập hay thời gian cho người có hoàn cảnh khó khăn hơn bạn.',tags:['#YêuThương','#HySinh','#KhiêmNhường'],sc:{courage:4,charity:5,leadership:3,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:3,humility:5,mission:3}},
+  {name:'Thánh Louis IX',title:'Vị vua thánh thiện',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Guido_Reni_-_St_Joseph_with_the_Infant_Jesus_-_WGA19304.jpg/330px-Guido_Reni_-_St_Joseph_with_the_Infant_Jesus_-_WGA19304.jpg',quote:'"Một vị vua cai trị để phục vụ — không phải để được phục vụ."',desc:'Vua Pháp kết hợp quyền lực hoàng gia với lòng khiêm tốn và đức ái Kitô giáo. Louis cải cách hệ thống pháp luật và chăm sóc người nghèo cá nhân mỗi ngày.',contemp:'Hôm nay dùng bất kỳ quyền hạn hay ảnh hưởng bạn có để phục vụ người khác, không phải để được phục vụ.',tags:['#LãnhĐạo','#YêuThương','#KhiêmNhường'],sc:{courage:4,charity:5,leadership:5,wisdom:4,sacrifice:3,prayer:4,creativity:2,peace:4,humility:4,mission:3}},
+  {name:'Thánh Isidore thành Seville',title:'Tiến sĩ bách khoa',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Gregory_the_Great_with_the_Holy_Spirit.jpg/330px-Gregory_the_Great_with_the_Holy_Spirit.jpg',quote:'"Học mà không suy ngẫm thì vô ích; suy ngẫm mà không học thì nguy hiểm."',desc:'Học giả và Giám mục thế kỷ 7, viết bộ bách khoa thư lớn nhất thời Trung Cổ. Isidore bảo tồn tri thức nhân loại trong thời kỳ hỗn loạn.',contemp:'Hôm nay học một điều mới về đức tin hoặc lịch sử Giáo Hội. Kiến thức là hồng ân và trách nhiệm.',tags:['#ThôngThái','#SángTạo','#LãnhĐạo'],sc:{courage:3,charity:3,leadership:4,wisdom:5,sacrifice:2,prayer:3,creativity:5,peace:3,humility:3,mission:3}},
+  {name:'Thánh Patrick',title:'Tông đồ nước Ireland',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Franciscus_de_Xabier.jpg/330px-Franciscus_de_Xabier.jpg',quote:'"Tôi trỗi dậy hôm nay với sức mạnh của Thiên Chúa để hướng dẫn tôi."',desc:'Từ nô lệ trở thành Giám mục truyền giáo, Patrick mang Tin Mừng về đúng vùng đất từng bắt mình làm nô lệ. Câu chuyện ngài là hành trình tha thứ và sứ mạng.',contemp:'Hôm nay trở lại một nơi hay gặp người đã từng gây khó cho bạn — với tâm thái tha thứ và yêu thương.',tags:['#TruyềnGiáo','#DũngCảm','#BìnhAn'],sc:{courage:5,charity:4,leadership:4,wisdom:3,sacrifice:4,prayer:4,creativity:3,peace:3,humility:3,mission:5}},
+  {name:'Thánh Gioan Tông Đồ',title:'Người môn đệ Chúa yêu',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Johnchrysostom.jpg/330px-Johnchrysostom.jpg',quote:'"Thiên Chúa là Tình Yêu."',desc:'Môn đệ trẻ nhất và duy nhất đứng dưới chân thập giá. Gioan viết bốn tác phẩm về tình yêu — và sống đến tuổi già vì sứ mạng yêu thương chưa hoàn thành.',contemp:'Hôm nay đọc chương 13 của Tin Mừng Gioan — nơi Chúa rửa chân cho môn đệ. Suy ngẫm: tình yêu của Chúa thay đổi cách bạn yêu người khác như thế nào?',tags:['#YêuThương','#CầuNguyện','#SángTạo'],sc:{courage:3,charity:5,leadership:2,wisdom:5,sacrifice:3,prayer:5,creativity:4,peace:5,humility:4,mission:3}},
 ];
 
+// ════════════════════════════════════════════
+// 20 BALANCED QUESTIONS — each trait appears EXACTLY 10 times
+// Q distribution: each row = 5 traits in order
+// courage×10, charity×10, leadership×10, wisdom×10, sacrifice×10
+// prayer×10, creativity×10, peace×10, humility×10, mission×10
+// ════════════════════════════════════════════
 const QS=[
-  {q:'Khi có vấn đề khó khăn xảy ra, bạn sẽ:',img:'https://images.unsplash.com/photo-1529408686214-b48b8532f72c?w=600&q=80',opts:[{t:'Lập kế hoạch cẩn thận rồi hành động',k:'wisdom'},{t:'Lao vào giải quyết ngay không chần chừ',k:'courage'},{t:'Cầu nguyện xin ơn soi sáng',k:'prayer'},{t:'Hỏi ý kiến mọi người cùng giải quyết',k:'leadership'},{t:'An ủi những người bị ảnh hưởng trước',k:'charity'}]},
-  {q:'Nếu được tự chọn ơn gọi, bạn muốn trở thành:',img:'https://images.unsplash.com/photo-1601933470096-0e34634ffcde?w=600&q=80',opts:[{t:'Người giúp đỡ người nghèo hằng ngày',k:'charity'},{t:'Nhà lãnh đạo dẫn dắt cộng đoàn',k:'leadership'},{t:'Nghệ sĩ tôn giáo — nhạc sĩ, họa sĩ',k:'creativity'},{t:'Nhà thần học nghiên cứu đức tin',k:'wisdom'},{t:'Nhà truyền giáo đến vùng đất xa',k:'mission'}]},
-  {q:'Khi người khác làm bạn tổn thương, bạn:',img:'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=600&q=80',opts:[{t:'Tha thứ và cầu nguyện cho họ',k:'prayer'},{t:'Đối đầu trực diện để làm rõ sự thật',k:'courage'},{t:'Tìm cách giảng hòa và nối lại quan hệ',k:'peace'},{t:'Giữ im lặng và chịu đựng',k:'sacrifice'},{t:'Gửi món quà nhỏ để làm lành',k:'charity'}]},
-  {q:'Điều bạn đánh giá cao nhất ở người bạn:',img:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80',opts:[{t:'Trung thành và tử tế trong mọi hoàn cảnh',k:'charity'},{t:'Thông minh và hay chia sẻ kiến thức',k:'wisdom'},{t:'Khích lệ bạn khi yếu lòng',k:'leadership'},{t:'Luôn cầu nguyện và nhắc bạn về Chúa',k:'prayer'},{t:'Khiêm tốn, giản dị, không phô trương',k:'humility'}]},
-  {q:'Một ngày lý tưởng với bạn là:',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',opts:[{t:'Tham gia hoạt động từ thiện giúp người nghèo',k:'charity'},{t:'Tìm nơi yên tĩnh để cầu nguyện và suy tư',k:'prayer'},{t:'Lên kế hoạch dẫn dắt dự án mới',k:'leadership'},{t:'Viết lách, vẽ tranh hoặc sáng tác âm nhạc',k:'creativity'},{t:'Giúp giải quyết mâu thuẫn giữa người thân',k:'peace'}]},
-  {q:'Khi nhóm xảy ra mâu thuẫn, bạn thường:',img:'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=600&q=80',opts:[{t:'Đứng ra làm trung gian hòa giải',k:'peace'},{t:'Nói thẳng sự thật để giải quyết dứt khoát',k:'courage'},{t:'Lắng nghe kỹ tất cả mọi người',k:'wisdom'},{t:'Cầu nguyện cho sự hòa giải',k:'prayer'},{t:'Lặng lẽ rút lui để bớt căng thẳng',k:'humility'}]},
-  {q:'Hoạt động đức tin nào bạn thích nhất?',img:'https://images.unsplash.com/photo-1438232992991-995b671a1bf6?w=600&q=80',opts:[{t:'Tình nguyện giúp người nghèo và yếu thế',k:'charity'},{t:'Truyền giáo, chia sẻ Tin Mừng',k:'mission'},{t:'Chiêm niệm và cầu nguyện trong thinh lặng',k:'prayer'},{t:'Dùng nghệ thuật phục vụ Giáo Hội',k:'creativity'},{t:'Đứng lên bảo vệ người bị bất công',k:'courage'}]},
-  {q:'Điều gì truyền cảm hứng cho bạn mạnh nhất?',img:'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&q=80',opts:[{t:'Câu chuyện về lòng can đảm vượt khó khăn',k:'courage'},{t:'Sự hy sinh thầm lặng vì người khác',k:'sacrifice'},{t:'Bài giảng sâu sắc về thần học',k:'wisdom'},{t:'Âm nhạc thánh ca và nghệ thuật tôn giáo',k:'creativity'},{t:'Cộng đoàn yêu thương gắn kết',k:'charity'}]},
-  {q:'Bạn cảm thấy gần Chúa nhất khi nào?',img:'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&q=80',opts:[{t:'Khi cầu nguyện trong yên lặng một mình',k:'prayer'},{t:'Khi phục vụ và yêu thương người khác',k:'charity'},{t:'Khi học hỏi và suy ngẫm Kinh Thánh',k:'wisdom'},{t:'Khi sáng tạo — hát, vẽ hoặc viết',k:'creativity'},{t:'Khi vượt qua thử thách bằng đức tin',k:'courage'}]},
-  {q:'Điều bạn sẵn sàng từ bỏ nhất vì đức tin:',img:'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&q=80',opts:[{t:'Tiện nghi và sung sướng cá nhân',k:'sacrifice'},{t:'Danh tiếng và sự nổi tiếng',k:'humility'},{t:'Sự an toàn khi đứng lên vì điều đúng',k:'courage'},{t:'Kế hoạch riêng để phục vụ người khác',k:'charity'},{t:'Ở lại quê nhà để ra đi truyền giáo',k:'mission'}]},
-  {q:'Trong buổi cầu nguyện nhóm, bạn thích:',img:'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=80',opts:[{t:'Dẫn dắt và hướng dẫn mọi người cầu nguyện',k:'leadership'},{t:'Ngồi yên lặng cầu nguyện cá nhân',k:'prayer'},{t:'Sáng tác bài hát hay lời cầu mới',k:'creativity'},{t:'Chia sẻ và giải thích Lời Chúa',k:'wisdom'},{t:'Âm thầm phục vụ hậu trường',k:'humility'}]},
-  {q:'Khi đọc về các Thánh, bạn bị thu hút bởi:',img:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',opts:[{t:'Những vị Thánh tử đạo anh hùng vì đức tin',k:'courage'},{t:'Những nhà thần học uyên bác sâu sắc',k:'wisdom'},{t:'Những nhà truyền giáo dũng cảm xa xứ',k:'mission'},{t:'Những tâm hồn chiêm niệm cầu nguyện sâu',k:'prayer'},{t:'Những vị Thánh phục vụ người nghèo cả đời',k:'charity'}]},
-  {q:'Khi thấy người đang đau khổ, bạn làm gì đầu tiên?',img:'https://images.unsplash.com/photo-1509909756405-be0199881695?w=600&q=80',opts:[{t:'Ở bên cạnh lắng nghe và đồng cảm',k:'charity'},{t:'Cầu nguyện cùng họ',k:'prayer'},{t:'Phân tích và tìm giải pháp thực tế',k:'wisdom'},{t:'Khích lệ và truyền cảm hứng',k:'leadership'},{t:'Chia sẻ những gì mình có',k:'sacrifice'}]},
-  {q:'Điều bạn muốn thay đổi nhất trong thế giới:',img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',opts:[{t:'Xóa bỏ đói nghèo và bất công',k:'charity'},{t:'Mang Tin Mừng đến mọi nơi',k:'mission'},{t:'Chấm dứt xung đột và mang lại hòa bình',k:'peace'},{t:'Nâng cao hiểu biết về đức tin',k:'wisdom'},{t:'Bảo vệ người yếu đuối bị áp bức',k:'courage'}]},
-  {q:'Sở thích nào gần bạn nhất?',img:'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=600&q=80',opts:[{t:'Vẽ tranh, viết lách hoặc làm âm nhạc',k:'creativity'},{t:'Đọc sách triết học và thần học',k:'wisdom'},{t:'Hoạt động từ thiện và xã hội',k:'charity'},{t:'Thiền định và cầu nguyện',k:'prayer'},{t:'Khám phá nơi mới và trải nghiệm',k:'mission'}]},
-  {q:'Nhân vật Kinh Thánh nào gần gũi nhất với bạn?',img:'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=600&q=80',opts:[{t:'Thánh Phêrô — mạnh mẽ, dẫn dắt cộng đoàn',k:'leadership'},{t:'Đức Maria — tình yêu và lòng trung thành',k:'charity'},{t:'Thánh Gioan — người môn đệ chiêm niệm',k:'prayer'},{t:'Thánh Phaolô — nhiệt thành truyền giáo',k:'mission'},{t:'Thánh Giuse — âm thầm, khiêm tốn, trung tín',k:'humility'}]},
-  {q:'Khi bị khen ngợi về điều tốt bạn làm, bạn:',img:'https://images.unsplash.com/photo-1444210971048-6130cf0c46cf?w=600&q=80',opts:[{t:'Cảm ơn và nói đó là ơn Chúa ban',k:'humility'},{t:'Khích lệ người khác cũng làm tương tự',k:'leadership'},{t:'Tìm cách làm tốt hơn lần sau',k:'wisdom'},{t:'Vui mừng vì đã giúp ích được người',k:'charity'},{t:'Bình thản và tiếp tục công việc tiếp theo',k:'peace'}]},
-  {q:'Khi gặp người thuộc tôn giáo khác, bạn:',img:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80',opts:[{t:'Tò mò và tìm hiểu quan điểm của họ',k:'wisdom'},{t:'Chia sẻ đức tin Công Giáo với họ',k:'mission'},{t:'Tìm điểm chung để xây dựng tình bạn',k:'peace'},{t:'Phục vụ và yêu thương bằng việc làm tốt',k:'charity'},{t:'Lắng nghe, tôn trọng và giữ khiêm tốn',k:'humility'}]},
-  {q:'Câu bạn tâm đắc nhất là:',img:'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&q=80',opts:[{t:'"Hãy làm nhỏ bé để Chúa được lớn lên"',k:'humility'},{t:'"Yêu thương là ơn gọi cao cả nhất"',k:'charity'},{t:'"Đức tin không có việc làm là đức tin chết"',k:'mission'},{t:'"Thinh lặng là ngôn ngữ của Thiên Chúa"',k:'prayer'},{t:'"Bình an tôi để lại cho các ngươi"',k:'peace'}]},
-  {q:'Sau khi về trời, bạn muốn được nhớ đến như:',img:'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=600&q=80',opts:[{t:'Người sống trọn đức tin dù gặp gian khó',k:'courage'},{t:'Người yêu thương và phục vụ tha nhân hết lòng',k:'charity'},{t:'Người dẫn dắt và truyền cảm hứng cho nhiều người',k:'leadership'},{t:'Người mang Tin Mừng đến nơi chưa biết Chúa',k:'mission'},{t:'Người sống trong bình an và khiêm nhường',k:'humility'}]},
+  // Q1: courage, charity, wisdom, prayer, mission
+  {q:'Khi có vấn đề khó khăn xảy ra, bạn sẽ:',img:'https://images.unsplash.com/photo-1529408686214-b48b8532f72c?w=600&q=80',opts:[
+    {t:'Lao thẳng vào giải quyết, không chần chừ',k:'courage'},
+    {t:'An ủi những người bị ảnh hưởng trước tiên',k:'charity'},
+    {t:'Lập kế hoạch cẩn thận rồi mới hành động',k:'wisdom'},
+    {t:'Cầu nguyện xin ơn soi sáng',k:'prayer'},
+    {t:'Kêu gọi cộng đoàn cùng giúp đỡ',k:'mission'}]},
+  // Q2: leadership, sacrifice, creativity, peace, humility
+  {q:'Trong nhóm dự án, vai trò tự nhiên của bạn là:',img:'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=600&q=80',opts:[
+    {t:'Người đặt ra tầm nhìn và dẫn dắt cả nhóm',k:'leadership'},
+    {t:'Người làm phần việc khó và nặng nhọc nhất',k:'sacrifice'},
+    {t:'Người sáng tạo ra ý tưởng mới mẻ',k:'creativity'},
+    {t:'Người đảm bảo không khí hòa thuận',k:'peace'},
+    {t:'Người hỗ trợ âm thầm mà không cần được ghi nhận',k:'humility'}]},
+  // Q3: courage, charity, leadership, wisdom, sacrifice
+  {q:'Khi thấy bất công xảy ra trước mắt, bạn:',img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',opts:[
+    {t:'Lên tiếng ngay dù có thể bị trả thù',k:'courage'},
+    {t:'Giúp đỡ nạn nhân ngay lập tức',k:'charity'},
+    {t:'Tìm người có thẩm quyền để can thiệp',k:'leadership'},
+    {t:'Phân tích để hiểu căn nguyên vấn đề',k:'wisdom'},
+    {t:'Nhận lấy thiệt thòi về mình để bảo vệ người yếu',k:'sacrifice'}]},
+  // Q4: prayer, creativity, peace, humility, mission
+  {q:'Một ngày lý tưởng với bạn là:',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',opts:[
+    {t:'Tìm nơi yên tĩnh để cầu nguyện và suy tư',k:'prayer'},
+    {t:'Viết lách, vẽ tranh hoặc sáng tác âm nhạc',k:'creativity'},
+    {t:'Giúp giải quyết mâu thuẫn giữa người thân',k:'peace'},
+    {t:'Làm việc tốt mà không cần ai biết',k:'humility'},
+    {t:'Chia sẻ đức tin với người chưa biết Chúa',k:'mission'}]},
+  // Q5: courage, charity, leadership, prayer, creativity
+  {q:'Khi đức tin bị thách thức, bạn:',img:'https://images.unsplash.com/photo-1438232992991-995b671a1bf6?w=600&q=80',opts:[
+    {t:'Giữ vững lập trường dù bị chê cười',k:'courage'},
+    {t:'Yêu thương người thách thức và cầu nguyện cho họ',k:'charity'},
+    {t:'Đứng ra bảo vệ cộng đoàn đức tin',k:'leadership'},
+    {t:'Thinh lặng và tìm đến Chúa trong cầu nguyện',k:'prayer'},
+    {t:'Dùng nghệ thuật để diễn đạt đức tin của mình',k:'creativity'}]},
+  // Q6: wisdom, sacrifice, peace, humility, mission
+  {q:'Điều bạn muốn để lại cho thế hệ sau nhất là:',img:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',opts:[
+    {t:'Kiến thức và sự hiểu biết sâu sắc về đức tin',k:'wisdom'},
+    {t:'Gương hy sinh và sống cho người khác',k:'sacrifice'},
+    {t:'Một thế giới hòa bình và đoàn kết hơn',k:'peace'},
+    {t:'Sự khiêm tốn và đơn giản trong cuộc sống',k:'humility'},
+    {t:'Tin Mừng được loan báo đến mọi người',k:'mission'}]},
+  // Q7: courage, charity, wisdom, sacrifice, humility
+  {q:'Điều bạn ngưỡng mộ nhất ở các vị Thánh là:',img:'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=600&q=80',opts:[
+    {t:'Lòng dũng cảm không sợ hãi trước nghịch cảnh',k:'courage'},
+    {t:'Tình yêu thương không giới hạn dành cho mọi người',k:'charity'},
+    {t:'Trí tuệ sâu sắc và đời sống tư duy phong phú',k:'wisdom'},
+    {t:'Sự hy sinh tuyệt vời vì đức tin và tha nhân',k:'sacrifice'},
+    {t:'Sự khiêm nhường sâu xa dù có tài năng lớn',k:'humility'}]},
+  // Q8: leadership, prayer, creativity, peace, mission
+  {q:'Hoạt động đức tin nào bạn thích nhất?',img:'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=80',opts:[
+    {t:'Tổ chức và lãnh đạo các nhóm cầu nguyện',k:'leadership'},
+    {t:'Chiêm niệm và cầu nguyện trong thinh lặng',k:'prayer'},
+    {t:'Dùng nghệ thuật để phụng sự Giáo Hội',k:'creativity'},
+    {t:'Xây dựng sự hòa thuận trong cộng đoàn',k:'peace'},
+    {t:'Truyền giáo và chia sẻ Tin Mừng',k:'mission'}]},
+  // Q9: courage, leadership, wisdom, prayer, peace
+  {q:'Khi phải đưa ra quyết định quan trọng, bạn:',img:'https://images.unsplash.com/photo-1529408686214-b48b8532f72c?w=600&q=80',opts:[
+    {t:'Quyết đoán và chịu trách nhiệm về lựa chọn của mình',k:'courage'},
+    {t:'Hỏi ý kiến nhiều người và lắng nghe',k:'leadership'},
+    {t:'Nghiên cứu kỹ lưỡng mọi khía cạnh trước',k:'wisdom'},
+    {t:'Cầu nguyện và đặt quyết định trong tay Chúa',k:'prayer'},
+    {t:'Tìm phương án ít gây xáo trộn nhất cho mọi người',k:'peace'}]},
+  // Q10: charity, sacrifice, creativity, humility, mission
+  {q:'Điều gì truyền cảm hứng cho bạn mạnh nhất?',img:'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&q=80',opts:[
+    {t:'Câu chuyện về tình yêu thương không điều kiện',k:'charity'},
+    {t:'Gương hy sinh thầm lặng của ai đó vì người khác',k:'sacrifice'},
+    {t:'Tác phẩm nghệ thuật mang chiều sâu tâm linh',k:'creativity'},
+    {t:'Tâm hồn khiêm tốn và đơn giản của các Thánh',k:'humility'},
+    {t:'Câu chuyện truyền giáo đến những vùng đất xa',k:'mission'}]},
+  // Q11: courage, charity, leadership, sacrifice, mission
+  {q:'Nếu được sống lại thời sơ khai Giáo Hội, bạn muốn là:',img:'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&q=80',opts:[
+    {t:'Người tử đạo gan dạ không chối bỏ đức tin',k:'courage'},
+    {t:'Người chăm sóc góa phụ và trẻ mồ côi',k:'charity'},
+    {t:'Giám mục dẫn dắt Giáo Hội trong bão táp',k:'leadership'},
+    {t:'Người chia hết tài sản cho người nghèo',k:'sacrifice'},
+    {t:'Nhà truyền giáo đầu tiên đến vùng dân ngoại',k:'mission'}]},
+  // Q12: wisdom, prayer, creativity, peace, humility
+  {q:'Trong buổi cầu nguyện nhóm, bạn thường:',img:'https://images.unsplash.com/photo-1438232992991-995b671a1bf6?w=600&q=80',opts:[
+    {t:'Chia sẻ và giải thích Lời Chúa cho mọi người',k:'wisdom'},
+    {t:'Ngồi yên lặng và cầu nguyện chiêm niệm',k:'prayer'},
+    {t:'Sáng tác bài hát hay lời cầu nguyện tự phát',k:'creativity'},
+    {t:'Hòa giải khi có căng thẳng giữa các thành viên',k:'peace'},
+    {t:'Âm thầm phục vụ hậu trường, sắp xếp mọi thứ',k:'humility'}]},
+  // Q13: courage, wisdom, prayer, creativity, mission
+  {q:'Bạn cảm thấy gần Chúa nhất khi nào?',img:'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=600&q=80',opts:[
+    {t:'Khi vượt qua thử thách lớn bằng đức tin',k:'courage'},
+    {t:'Khi học hỏi sâu và khám phá mầu nhiệm đức tin',k:'wisdom'},
+    {t:'Khi cầu nguyện một mình trong thinh lặng',k:'prayer'},
+    {t:'Khi sáng tạo — hát, vẽ, hay viết về Chúa',k:'creativity'},
+    {t:'Khi chia sẻ Tin Mừng và thấy ai đó đón nhận',k:'mission'}]},
+  // Q14: charity, leadership, sacrifice, peace, humility
+  {q:'Điều bạn sẵn sàng từ bỏ nhất vì đức tin:',img:'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&q=80',opts:[
+    {t:'Kế hoạch riêng để phục vụ người cần giúp',k:'charity'},
+    {t:'Sự nghiệp riêng để dẫn dắt cộng đoàn',k:'leadership'},
+    {t:'Tiện nghi và sung sướng cá nhân',k:'sacrifice'},
+    {t:'Quan điểm của mình để giữ hòa khí',k:'peace'},
+    {t:'Danh tiếng và sự công nhận từ người khác',k:'humility'}]},
+  // Q15: courage, charity, wisdom, peace, humility
+  {q:'Khi bị khen ngợi về điều tốt bạn làm, bạn:',img:'https://images.unsplash.com/photo-1444210971048-6130cf0c46cf?w=600&q=80',opts:[
+    {t:'Dùng cơ hội này để khích lệ người khác cũng làm',k:'courage'},
+    {t:'Vui vì đã giúp ích và tiếp tục yêu thương',k:'charity'},
+    {t:'Tìm cách làm tốt hơn dựa trên phản hồi',k:'wisdom'},
+    {t:'Bình thản đón nhận và không bị xáo trộn',k:'peace'},
+    {t:'Quy mọi vinh dự về Thiên Chúa',k:'humility'}]},
+  // Q16: leadership, sacrifice, prayer, creativity, mission
+  {q:'Nếu được đóng góp tài năng cho Giáo Hội, bạn chọn:',img:'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=600&q=80',opts:[
+    {t:'Tổ chức và xây dựng cộng đoàn đức tin',k:'leadership'},
+    {t:'Phục vụ người nghèo và yếu thế',k:'sacrifice'},
+    {t:'Cầu nguyện liên tục cho Giáo Hội',k:'prayer'},
+    {t:'Sáng tác nhạc thánh, vẽ tranh hay viết sách đạo',k:'creativity'},
+    {t:'Truyền giáo đến những nơi chưa có Tin Mừng',k:'mission'}]},
+  // Q17: courage, leadership, wisdom, sacrifice, creativity
+  {q:'Khi Giáo Hội đối mặt với khủng hoảng, bạn:',img:'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&q=80',opts:[
+    {t:'Lên tiếng bảo vệ sự thật dù bị phản đối',k:'courage'},
+    {t:'Đứng ra dẫn dắt và tổ chức cộng đoàn vượt qua',k:'leadership'},
+    {t:'Nghiên cứu lịch sử Giáo Hội để tìm con đường',k:'wisdom'},
+    {t:'Chịu đựng trong thinh lặng và cầu nguyện',k:'sacrifice'},
+    {t:'Dùng sáng tạo để truyền đạt sứ điệp hy vọng',k:'creativity'}]},
+  // Q18: charity, prayer, peace, humility, mission
+  {q:'Điều bạn muốn thay đổi nhất trong thế giới:',img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',opts:[
+    {t:'Xóa bỏ đói nghèo và bất công xã hội',k:'charity'},
+    {t:'Đưa con người trở về với đời sống tâm linh',k:'prayer'},
+    {t:'Chấm dứt chiến tranh và mang lại hòa bình',k:'peace'},
+    {t:'Xây dựng xã hội khiêm tốn hơn và ít kiêu ngạo',k:'humility'},
+    {t:'Mang Tin Mừng đến mọi người trên trái đất',k:'mission'}]},
+  // Q19: courage, charity, leadership, prayer, humility
+  {q:'Nhân vật Kinh Thánh nào gần gũi nhất với bạn?',img:'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=600&q=80',opts:[
+    {t:'Giuđitha — người phụ nữ dũng cảm cứu dân tộc',k:'courage'},
+    {t:'Ruth — lòng trung thành và yêu thương bất khuất',k:'charity'},
+    {t:'Môsê — người lãnh đạo giải phóng dân Chúa',k:'leadership'},
+    {t:'Êlia — ngôn sứ sống trong cầu nguyện và chiêm niệm',k:'prayer'},
+    {t:'Thánh Giuse — âm thầm, khiêm tốn, trung tín',k:'humility'}]},
+  // Q20: wisdom, sacrifice, creativity, peace, mission
+  {q:'Sau khi qua đời, bạn muốn được nhớ đến như:',img:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80',opts:[
+    {t:'Người đã sống và chia sẻ sự khôn ngoan đức tin',k:'wisdom'},
+    {t:'Người đã hy sinh tất cả vì Chúa và tha nhân',k:'sacrifice'},
+    {t:'Người đã làm đẹp thế giới bằng tài năng sáng tạo',k:'creativity'},
+    {t:'Người đã mang lại bình an và hòa giải',k:'peace'},
+    {t:'Người đã không ngừng rao giảng Tin Mừng',k:'mission'}]},
 ];
 
-// ══ State ══
-let cur=0,answers=[],radarChart=null,saintRevealed=false,resultSaint=null;
+// ════════════════════════════════════════════
+// OPPORTUNITY COUNT (precomputed)
+// ════════════════════════════════════════════
+const OPP={};
+TR.forEach(t=>OPP[t.k]=0);
+QS.forEach(q=>q.opts.forEach(o=>OPP[o.k]++));
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let cur=0,answers=[],radarChart=null,revealed=false,resSaint=null;
 const LT=['A','B','C','D','E'];
-const SCAN_PHRASES=['Phân tích tính cách...','Đối chiếu 10 chiều tính cách...','Tìm vị Thánh tương đồng...','Khám phá hành trình thiêng liêng của bạn...'];
+const PHRASES=['Phân tích tính cách...','Đối chiếu 10 chiều tính cách...','Tìm vị Thánh tương đồng...','Khám phá hành trình thiêng liêng...'];
+const STRIP_PHOTOS=SAINTS.slice(0,20).map(s=>s.photo);
 
-// Stars
-(()=>{const c=document.getElementById('stars');for(let i=0;i<70;i++){const s=document.createElement('div');s.className='star';const sz=1+Math.random()*2;s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*5}s;--dl:${Math.random()*5}s`;c.appendChild(s);}})();
-
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function startQuiz(){cur=0;answers=new Array(QS.length).fill(null);saintRevealed=false;initTraitLive();renderQ();show('qScreen');}
-
-// ── Live Trait Bars ──
-function initTraitLive(){
-  const el=document.getElementById('tlBars');
-  el.innerHTML=TR.map(t=>`<div class="tl-row"><div class="tl-lbl">${t.l}</div><div class="tl-bar"><div class="tl-fill" id="tlf_${t.k}" style="width:0%"></div></div><div class="tl-val" id="tlv_${t.k}">0</div></div>`).join('');
+// ── Build Intro ──
+function buildIntro(){
+  // Floating portraits
+  const bg=document.getElementById('iBg');
+  const W=window.innerWidth,H=window.innerHeight;
+  SAINTS.slice(0,12).forEach((s,i)=>{
+    const img=document.createElement('img');
+    img.className='fs';
+    const sz=50+Math.floor(Math.random()*50);
+    img.style.cssText=`width:${sz}px;height:${sz}px;left:${5+Math.random()*85}%;top:${5+Math.random()*80}%;--dur:${4+Math.random()*4}s;--delay:${i*0.5}s;--dur2:${3+Math.random()*4}s;--delay2:${i*0.7}s`;
+    img.src=s.photo;img.alt='';
+    img.onerror=()=>img.remove();
+    bg.appendChild(img);
+  });
+  // Particles
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='particle';
+    const sz=2+Math.random()*3;
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:0;--pr:${4+Math.random()*6}s;--pd:${Math.random()*4}s;--px:${(Math.random()-.5)*60}px`;
+    bg.appendChild(p);
+  }
+  // Strip
+  const strip=document.getElementById('sStrip');
+  const photos=[...STRIP_PHOTOS,...STRIP_PHOTOS];
+  photos.forEach(p=>{const img=document.createElement('img');img.src=p;img.onerror=()=>img.remove();strip.appendChild(img);});
 }
-function updateTraitLive(){
+buildIntro();
+
+// ── Screens ──
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function startQuiz(){cur=0;answers=new Array(QS.length).fill(null);revealed=false;initTL();renderQ();show('qScreen');}
+
+// ── Live Traits ──
+function initTL(){
+  const el=document.getElementById('tlBars');
+  el.innerHTML=TR.map(t=>`<div class="tl-row" id="tlr-${t.k}"><span class="tl-lbl">${t.l}</span><div class="tl-bar"><div class="tl-fill" id="tlf-${t.k}" style="width:0%"></div></div><span class="tl-val" id="tlv-${t.k}">0</span></div>`).join('');
+}
+function updateTL(){
   const sc={};TR.forEach(t=>sc[t.k]=0);
-  answers.forEach((a,qi)=>{if(a!==null)sc[QS[qi].opts[a].k]++;});
-  const total=Object.values(sc).reduce((a,b)=>a+b,0)||1;
-  const max=Math.max(...Object.values(sc),1);
+  answers.forEach((a,i)=>{if(a!=null)sc[QS[i].opts[a].k]++;});
+  // Max possible from answered questions
   TR.forEach(t=>{
-    const el=document.getElementById('tlf_'+t.k);
-    const vl=document.getElementById('tlv_'+t.k);
-    if(el){el.style.width=Math.round(sc[t.k]/max*100)+'%';}
-    if(vl){vl.textContent=sc[t.k];}
+    const opp=answers.filter((a,i)=>a!=null&&QS[i].opts.some(o=>o.k===t.k)).length||1;
+    const pct=Math.round(sc[t.k]/Math.max(opp,1)*100);
+    const el=document.getElementById('tlf-'+t.k);
+    const vel=document.getElementById('tlv-'+t.k);
+    if(el)el.style.width=pct+'%';
+    if(vel)vel.textContent=sc[t.k];
   });
 }
 
+// ── Render Question ──
 function renderQ(){
   const q=QS[cur];
+  document.getElementById('pLbl').textContent=`Câu ${cur+1} / ${QS.length}`;
   const pct=Math.round(cur/QS.length*100);
-  document.getElementById('pLabel').textContent=`Câu ${cur+1} / ${QS.length}`;
   document.getElementById('pPct').textContent=pct+'%';
   document.getElementById('pFill').style.width=pct+'%';
   document.getElementById('qNum').textContent=`CÂU ${String(cur+1).padStart(2,'0')}`;
-  document.getElementById('qText').textContent=q.q;
-  const img=document.getElementById('qImg');
-  img.classList.remove('loaded');img.src=q.img;
-  document.querySelectorAll('.q-img-wrap').forEach(w=>w.style.display='block');
+  document.getElementById('qTxt').textContent=q.q;
+  const imgEl=document.getElementById('qImg');
+  imgEl.classList.remove('ok');imgEl.src=q.img;
+  imgEl.closest('.q-img-wrap').style.display='';
   const wrap=document.getElementById('optsWrap');
-  wrap.innerHTML='';
-  q.opts.forEach((o,i)=>{
-    const d=document.createElement('div');
-    d.className='opt'+(answers[cur]===i?' sel':'');
-    d.innerHTML=`<div class="opt-l">${LT[i]}</div><span>${o.t}</span>`;
-    d.onclick=()=>pick(i);
-    wrap.appendChild(d);
-  });
-  document.getElementById('backBtn').style.display=cur>0?'block':'none';
-  const nb=document.getElementById('nextBtn');
-  nb.disabled=answers[cur]===null;
-  nb.textContent=cur===QS.length-1?'🎉 Xem kết quả':'Tiếp theo →';
+  wrap.innerHTML=q.opts.map((o,i)=>`<button class="opt${answers[cur]===i?' sel':''}" onclick="selectOpt(${i})"><span class="opt-l">${LT[i]}</span><span>${o.t}</span></button>`).join('');
+  document.getElementById('nextBtn').disabled=answers[cur]==null;
+  document.getElementById('nextBtn').textContent=cur===QS.length-1?'Xem kết quả 🎉':'Tiếp theo →';
+  document.getElementById('backBtn').style.display=cur>0?'':'none';
+  updateTL();
 }
-
-function pick(i){
-  answers[cur]=i;
-  document.querySelectorAll('.opt').forEach((el,idx)=>el.classList.toggle('sel',idx===i));
-  document.getElementById('nextBtn').disabled=false;
-  updateTraitLive();
-}
-function next(){if(answers[cur]===null)return;if(cur<QS.length-1){cur++;renderQ();}else{startLoading();}}
+function selectOpt(i){answers[cur]=i;renderQ();}
 function prev(){if(cur>0){cur--;renderQ();}}
+function next(){
+  if(answers[cur]==null)return;
+  if(cur<QS.length-1){cur++;renderQ();}
+  else showLoading();
+}
 
 // ── Loading ──
-function startLoading(){
+function showLoading(){
   show('ldScreen');
   let pi=0;
-  const pEl=document.getElementById('scanPhrases');
-  const iv=setInterval(()=>{pEl.textContent=SCAN_PHRASES[pi%SCAN_PHRASES.length];pi++;},700);
-  setTimeout(()=>{clearInterval(iv);showResult();},3000);
+  const ph=document.getElementById('scanPhrase');
+  const iv=setInterval(()=>{ph.textContent=PHRASES[pi%PHRASES.length];pi++;},800);
+  setTimeout(()=>{clearInterval(iv);showResult();},3200);
 }
 
-// ── Scoring ──
+// ── Scoring (opportunity-normalized) ──
 function calcScores(){
   const sc={};TR.forEach(t=>sc[t.k]=0);
-  answers.forEach((a,qi)=>{if(a!==null)sc[QS[qi].opts[a].k]++;});
-  return sc;
+  answers.forEach((a,i)=>{if(a!=null)sc[QS[i].opts[a].k]++;});
+  const norm={};
+  TR.forEach(t=>norm[t.k]=OPP[t.k]>0?sc[t.k]/OPP[t.k]:0);
+  return norm;
 }
-function findSaints(sc){
-  const total=Object.values(sc).reduce((a,b)=>a+b,0)||1;
-  const norm={};TR.forEach(t=>norm[t.k]=sc[t.k]/total);
-  const maxD=Math.sqrt(TR.length);
-  return SAINTS.map(s=>({s,dist:Math.sqrt(TR.reduce((sum,t)=>sum+Math.pow(norm[t.k]-s.scores[t.k]/5,2),0))}))
-    .map(x=>({...x,pct:Math.round(Math.max(0,(1-x.dist/maxD)*100))}))
-    .sort((a,b)=>a.dist-b.dist);
+function euclidean(a,b){
+  return Math.sqrt(TR.reduce((s,t)=>s+Math.pow((a[t.k]||0)-(b[t.k]||0),2),0));
+}
+function findSaints(norm){
+  // Normalize saint scores to 0-1
+  const scored=SAINTS.map(s=>{
+    const sn={};TR.forEach(t=>sn[t.k]=(s.sc[t.k]||0)/5);
+    const dist=euclidean(norm,sn);
+    return{...s,dist,match:Math.round((1-dist/Math.sqrt(TR.length))*100)};
+  });
+  scored.sort((a,b)=>a.dist-b.dist);
+  return scored;
 }
 
 // ── Result ──
 function showResult(){
-  const sc=calcScores();
-  const ranked=findSaints(sc);
-  resultSaint=ranked[0].s;
-  const pct=ranked[0].pct;
+  const norm=calcScores();
+  const ranked=findSaints(norm);
+  resSaint=ranked[0];
+  const runners=ranked.slice(1,4);
 
-  // Silhouette (dark)
-  const ph=document.getElementById('sPhoto');
-  ph.src=resultSaint.photo;
-  ph.className='saint-photo'; // reset, keeps dark filter
-  document.getElementById('sMatch').textContent=`✨ Tương đồng ${pct}%`;
-  document.getElementById('sName').textContent=resultSaint.name;
-  document.getElementById('sTitle').textContent=resultSaint.title;
+  // Photo & name
+  document.getElementById('sPhoto').src=resSaint.photo;
+  document.getElementById('sName').textContent=resSaint.name;
+  document.getElementById('sTitle').textContent=resSaint.title;
+  document.getElementById('sBadge').textContent=`✨ ${resSaint.match}% tương đồng`;
+  revealed=false;
+  document.getElementById('tapHint').classList.remove('gone');
+  document.getElementById('sPhoto').classList.remove('on');
 
-  // Prefill card content (hidden until reveal)
-  document.getElementById('sQuote').innerHTML='';
-  document.getElementById('sDesc').textContent=resultSaint.desc;
-  document.getElementById('sTags').innerHTML=resultSaint.tags.map(t=>`<span class="s-tag">${t}</span>`).join('');
+  // Card (show after reveal)
+  const sCard=document.getElementById('sCard');
+  sCard.classList.remove('show');
+  document.getElementById('sQuote').textContent='';
+  document.getElementById('sDesc').textContent=resSaint.desc;
+  document.getElementById('sTags').innerHTML=resSaint.tags.map(t=>`<span class="s-tag">${t}</span>`).join('');
 
-  // Chart & bars
-  const total=Object.values(sc).reduce((a,b)=>a+b,0)||1;
-  if(radarChart)radarChart.destroy();
-  radarChart=new Chart(document.getElementById('radar').getContext('2d'),{
-    type:'radar',
-    data:{labels:TR.map(t=>t.l),datasets:[
-      {label:'Bạn',data:TR.map(t=>+(sc[t.k]/total*5).toFixed(2)),backgroundColor:'rgba(212,160,23,.22)',borderColor:'#d4a017',borderWidth:2,pointBackgroundColor:'#d4a017',pointRadius:4},
-      {label:resultSaint.name,data:TR.map(t=>resultSaint.scores[t.k]),backgroundColor:'rgba(100,180,255,.08)',borderColor:'rgba(100,180,255,.45)',borderWidth:1.5,borderDash:[4,4],pointRadius:2}
-    ]},
-    options:{responsive:true,scales:{r:{min:0,max:5,ticks:{display:false},grid:{color:'rgba(255,255,255,.1)'},angleLines:{color:'rgba(255,255,255,.1)'},pointLabels:{color:'#fff',font:{size:10,weight:'600'}}}},plugins:{legend:{labels:{color:'#fff',font:{size:11}}}}}
-  });
-  const barsEl=document.getElementById('bars');barsEl.innerHTML='';
-  [...TR].sort((a,b)=>sc[b.k]-sc[a.k]).forEach(t=>{
-    const p=Math.round(sc[t.k]/total*100);
-    barsEl.innerHTML+=`<div class="bar-row"><div class="bar-lbl">${t.l}</div><div class="bar-bg"><div class="bar-fill" style="width:0%" data-w="${p}%"></div></div><div class="bar-pct">${p}%</div></div>`;
-  });
+  // Chart
+  const chartCard=document.getElementById('chartCard');
+  chartCard.classList.remove('show');
+  if(radarChart){radarChart.destroy();radarChart=null;}
 
   // Runners
-  const rEl=document.getElementById('runners');rEl.innerHTML='';
-  ranked.slice(1,3).forEach(r=>{
-    rEl.innerHTML+=`<div class="runner"><img class="runner-img" src="${r.s.photo}" onerror="this.style.display='none'" alt=""><div class="runner-name">${r.s.name}</div><div class="runner-pct">${r.pct}%</div></div>`;
-  });
+  document.getElementById('runnersWrap').classList.remove('show');
+  document.getElementById('runnerList').innerHTML=runners.map(r=>`<div class="runner"><img class="runner-img" src="${r.photo}" onerror="this.src=''" alt=""><div class="runner-name">${r.name}</div><div class="runner-pct">${r.match}%</div></div>`).join('');
 
-  document.getElementById('contemp').textContent=resultSaint.contemp;
-  document.getElementById('cardBadge').innerHTML=`Bạn nhận được <strong>Thẻ ${resultSaint.name}</strong>! 🎴<br>Mở app Thông Tin Công Giáo để nhận thưởng.`;
+  // Contemp
+  document.getElementById('contempCard').classList.remove('show');
+  document.getElementById('contempTxt').textContent=resSaint.contemp;
+
+  // Badge
+  document.getElementById('cardBadge').classList.remove('show');
+  document.getElementById('cbTxt').innerHTML=`<strong>Thẻ Thánh của bạn:</strong> ${resSaint.name} — ${resSaint.title}`;
 
   show('rScreen');
-  // Animate bars after transition
-  setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w),400);
+  setTimeout(()=>showChartAndRunners(norm),800);
 }
 
-// ── Silhouette Reveal ──
-function revealSaint(){
-  if(saintRevealed)return;
-  saintRevealed=true;
-  document.getElementById('sPhoto').classList.add('revealed');
-  document.getElementById('tapHint').classList.add('hidden');
-
-  // Reveal cards with delay
+function reveal(){
+  if(revealed)return;
+  revealed=true;
+  document.getElementById('sPhoto').classList.add('on');
+  document.getElementById('tapHint').classList.add('gone');
   setTimeout(()=>{
-    ['saintCard','chartCard','runnersWrap','contempCard','cardBadgeWrap'].forEach((id,i)=>{
-      setTimeout(()=>document.getElementById(id).style.opacity='1',i*200);
-    });
-    // Typewriter quote
-    typewrite(document.getElementById('sQuote'), resultSaint.quote, 40);
-    // Confetti!
-    launchConfetti();
-  }, 800);
+    document.getElementById('sCard').classList.add('show');
+    typewriterQuote(resSaint.quote,document.getElementById('sQuote'));
+  },600);
+  confetti();
 }
 
-// ── Typewriter ──
-function typewrite(el, text, speed){
-  el.innerHTML='';
+function typewriterQuote(txt,el){
+  el.textContent='';
+  const cur=document.createElement('span');cur.className='cursor';
+  el.appendChild(cur);
   let i=0;
-  const cursor=document.createElement('span');cursor.className='cursor';
-  el.appendChild(cursor);
   const iv=setInterval(()=>{
-    el.insertBefore(document.createTextNode(text[i]),cursor);
-    i++;
-    if(i>=text.length){clearInterval(iv);setTimeout(()=>cursor.remove(),1000);}
-  },speed);
+    if(i<txt.length){el.insertBefore(document.createTextNode(txt[i]),cur);i++;}
+    else{cur.remove();clearInterval(iv);}
+  },35);
+}
+
+function showChartAndRunners(norm){
+  const chartCard=document.getElementById('chartCard');
+  chartCard.classList.add('show');
+  const labels=TR.map(t=>t.l);
+  const data=TR.map(t=>Math.round((norm[t.k]||0)*100));
+  const ctx=document.getElementById('radar').getContext('2d');
+  radarChart=new Chart(ctx,{type:'radar',data:{labels,datasets:[{label:'Bạn',data,backgroundColor:'rgba(212,160,23,.2)',borderColor:'rgba(212,160,23,.8)',pointBackgroundColor:'rgba(212,160,23,1)',pointRadius:3}]},options:{responsive:true,scales:{r:{min:0,max:100,ticks:{display:false},grid:{color:'rgba(255,255,255,.1)'},pointLabels:{color:'rgba(255,255,255,.8)',font:{size:10}}}},plugins:{legend:{display:false}}}});
+  // Bars
+  document.getElementById('bars').innerHTML=TR.map((t,i)=>`<div class="bar-row"><span class="bar-lbl">${t.l}</span><div class="bar-bg"><div class="bar-fill" style="width:0%" id="br${i}"></div></div><span class="bar-pct">${data[i]}%</span></div>`).join('');
+  setTimeout(()=>TR.forEach((t,i)=>{const el=document.getElementById('br'+i);if(el)el.style.width=data[i]+'%';}),100);
+
+  setTimeout(()=>{
+    document.getElementById('runnersWrap').classList.add('show');
+    document.getElementById('contempCard').classList.add('show');
+    document.getElementById('cardBadge').classList.add('show');
+  },400);
 }
 
 // ── Confetti ──
-function launchConfetti(){
-  const canvas=document.getElementById('confetti');
-  canvas.style.display='block';
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d');
-  const pieces=[];
-  const colors=['#d4a017','#f0c040','#fff','#3d9970','#2980b9','#e74c3c'];
-  for(let i=0;i<120;i++){
-    pieces.push({x:Math.random()*canvas.width,y:-20,w:6+Math.random()*8,h:8+Math.random()*12,
-      color:colors[Math.floor(Math.random()*colors.length)],
-      rot:Math.random()*360,rotS:(Math.random()-.5)*8,
-      vx:(Math.random()-.5)*6,vy:2+Math.random()*4,alpha:1});
+function confetti(){
+  const cnv=document.getElementById('cfx');
+  cnv.style.display='block';
+  cnv.width=window.innerWidth;cnv.height=window.innerHeight;
+  const ctx=cnv.getContext('2d');
+  const parts=Array.from({length:100},()=>({x:Math.random()*cnv.width,y:-10,vx:(Math.random()-0.5)*4,vy:2+Math.random()*4,color:`hsl(${Math.random()*60+30},90%,60%)`,r:4+Math.random()*6,rot:Math.random()*360,vr:(Math.random()-0.5)*10}));
+  let fr=0;
+  function draw(){
+    ctx.clearRect(0,0,cnv.width,cnv.height);
+    parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.vy+=0.05;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);ctx.restore();});
+    fr++;if(fr<120)requestAnimationFrame(draw);else cnv.style.display='none';
   }
-  let frame=0;
-  function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    pieces.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotS;p.vy+=.08;
-      if(frame>60)p.alpha=Math.max(0,p.alpha-.008);
-      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
-      ctx.globalAlpha=p.alpha;ctx.fillStyle=p.color;
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
-    });
-    frame++;
-    if(frame<180)requestAnimationFrame(animate);
-    else canvas.style.display='none';
-  }
-  animate();
+  draw();
 }
 
 // ── Share ──
-function shareResult(){
-  const name=resultSaint?resultSaint.name:'Vị Thánh';
-  const text=`✨ Tôi vừa làm trắc nghiệm "Bạn giống Vị Thánh nào?" và kết quả là:\n\n${name}\n\nBạn thử xem mình giống Thánh nào nhé! 👉 App Thông Tin Công Giáo\n\n#ThôngTinCôngGiáo #TrắcNghiệmThánh`;
-  if(navigator.share)navigator.share({title:'Bạn Giống Vị Thánh Nào?',text});
-  else navigator.clipboard?.writeText(text).then(()=>alert('✅ Đã copy! Dán vào Facebook/Zalo để chia sẻ.'));
+async function shareResult(){
+  const txt=`Tôi giống ${resSaint.name} (${resSaint.match}% tương đồng)! 🙏\nKhám phá vị Thánh của bạn tại: https://takvirus.github.io/saint-quiz/`;
+  if(navigator.share){try{await navigator.share({title:'Bạn Giống Vị Thánh Nào?',text:txt});return;}catch(e){}}
+  navigator.clipboard.writeText(txt).then(()=>alert('Đã sao chép! Hãy chia sẻ với bạn bè nhé 🙏')).catch(()=>alert(txt));
 }
 
-// ── Download Card (Canvas) ──
+// ── Download Card ──
 function downloadCard(){
-  if(!resultSaint){alert('Hãy hoàn thành trắc nghiệm trước!');return;}
-  const canvas=document.getElementById('shareCanvas');
-  const ctx=canvas.getContext('2d');
+  const cnv=document.getElementById('shareCanvas');
+  const ctx=cnv.getContext('2d');
   const W=800,H=800;
-  canvas.width=W;canvas.height=H;
-
-  // Background gradient
+  // Background
   const bg=ctx.createLinearGradient(0,0,W,H);
-  bg.addColorStop(0,'#0d1b2a');bg.addColorStop(.5,'#1a2744');bg.addColorStop(1,'#0f2a1e');
+  bg.addColorStop(0,'#0d1b2a');bg.addColorStop(1,'#1a2744');
   ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-
   // Gold border
-  ctx.strokeStyle='rgba(212,160,23,0.6)';ctx.lineWidth=4;
-  ctx.strokeRect(16,16,W-32,H-32);
-  ctx.strokeStyle='rgba(212,160,23,0.2)';ctx.lineWidth=1;
-  ctx.strokeRect(24,24,W-48,H-48);
-
-  // Cross watermark
-  ctx.font='bold 120px serif';ctx.fillStyle='rgba(212,160,23,0.06)';
-  ctx.textAlign='center';ctx.fillText('✝',W/2,H/2+40);
-
-  // App name
-  ctx.font='bold 22px sans-serif';ctx.fillStyle='rgba(212,160,23,0.8)';
-  ctx.textAlign='center';ctx.fillText('THÔNG TIN CÔNG GIÁO', W/2, 65);
-
+  ctx.strokeStyle='#d4a017';ctx.lineWidth=6;ctx.strokeRect(20,20,W-40,H-40);
+  // Cross
+  ctx.fillStyle='#d4a017';ctx.font='bold 52px serif';ctx.textAlign='center';
+  ctx.fillText('✝️',W/2,100);
   // Title
-  ctx.font='bold 18px sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';
-  ctx.fillText('Trắc nghiệm tính cách', W/2, 100);
-
-  // Divider
-  ctx.beginPath();ctx.moveTo(120,118);ctx.lineTo(W-120,118);
-  ctx.strokeStyle='rgba(212,160,23,0.4)';ctx.lineWidth=1;ctx.stroke();
-
-  // Saint photo (try to draw)
-  const img=new Image();img.crossOrigin='anonymous';
-  img.onload=()=>{
-    // Circular clip for photo
-    ctx.save();ctx.beginPath();ctx.arc(W/2,280,160,0,Math.PI*2);ctx.clip();
-    ctx.drawImage(img,W/2-160,120,320,320);ctx.restore();
-    // Gold ring
-    ctx.beginPath();ctx.arc(W/2,280,162,0,Math.PI*2);
-    ctx.strokeStyle='rgba(212,160,23,0.7)';ctx.lineWidth=4;ctx.stroke();
-    finishCard(ctx,W,H);
-  };
-  img.onerror=()=>finishCard(ctx,W,H);
-  img.src=resultSaint.photo;
-}
-
-function finishCard(ctx,W,H){
-  const s=resultSaint;
-  const sc=calcScores();
-  const total=Object.values(sc).reduce((a,b)=>a+b,0)||1;
-  const ranked=findSaints(sc);
-  const pct=ranked[0].pct;
-
-  // Match badge
-  ctx.fillStyle='rgba(212,160,23,0.9)';
-  roundRect(ctx,W/2-80,460,160,36,18);ctx.fill();
-  ctx.font='bold 16px sans-serif';ctx.fillStyle='#000';
-  ctx.textAlign='center';ctx.fillText(`✨ Tương đồng ${pct}%`,W/2,483);
-
+  ctx.fillStyle='#f0c040';ctx.font='bold 28px "Segoe UI",sans-serif';
+  ctx.fillText('BẠN GIỐNG VỊ THÁNH NÀO?',W/2,160);
   // Saint name
-  ctx.font='bold 36px sans-serif';ctx.fillStyle='#fff';
-  ctx.textAlign='center';ctx.fillText(s.name,W/2,540);
-
-  // Title
-  ctx.font='18px sans-serif';ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.fillText(s.title,W/2,572);
-
-  // Top 3 traits
-  const top3=TR.map(t=>({t,v:sc[t.k]})).sort((a,b)=>b.v-a.v).slice(0,3);
-  const tagW=160,tagH=38,gap=16;
-  const total3=top3.length,startX=(W-(total3*tagW+(total3-1)*gap))/2;
-  top3.forEach((item,i)=>{
-    const tx=startX+i*(tagW+gap);
-    ctx.fillStyle='rgba(212,160,23,0.18)';
-    ctx.strokeStyle='rgba(212,160,23,0.45)';ctx.lineWidth=1;
-    roundRect(ctx,tx,600,tagW,tagH,19);ctx.fill();ctx.stroke();
-    ctx.font='bold 14px sans-serif';ctx.fillStyle='#f0c040';
-    ctx.textAlign='center';ctx.fillText(item.t.l,tx+tagW/2,624);
-  });
-
-  // Divider
-  ctx.beginPath();ctx.moveTo(120,660);ctx.lineTo(W-120,660);
-  ctx.strokeStyle='rgba(212,160,23,0.3)';ctx.lineWidth=1;ctx.stroke();
-
-  // Tags
-  ctx.font='14px sans-serif';ctx.fillStyle='rgba(240,192,64,0.8)';
-  ctx.textAlign='center';ctx.fillText(s.tags.join('  '),W/2,695);
-
-  // Quote (truncated)
-  const q=s.quote.length>60?s.quote.slice(0,60)+'..."':s.quote;
-  ctx.font='italic 14px sans-serif';ctx.fillStyle='rgba(255,255,255,0.55)';
-  ctx.fillText(q,W/2,730);
-
-  // Footer
-  ctx.font='13px sans-serif';ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.fillText('App Thông Tin Công Giáo  •  #TrắcNghiệmThánh',W/2,775);
-
-  // Download
-  const link=document.createElement('a');
-  link.download=`the-thanh-${s.name.replace(/\s+/g,'-')}.png`;
-  link.href=document.getElementById('shareCanvas').toDataURL('image/png');
-  link.click();
+  ctx.fillStyle='#ffffff';ctx.font='bold 36px "Segoe UI",sans-serif';
+  ctx.fillText(resSaint.name,W/2,580);
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='20px "Segoe UI",sans-serif';
+  ctx.fillText(resSaint.title,W/2,620);
+  // Match
+  ctx.fillStyle='#f0c040';ctx.font='bold 42px "Segoe UI",sans-serif';
+  ctx.fillText(`${resSaint.match}% tương đồng`,W/2,680);
+  // Photo
+  const img=new Image();img.crossOrigin='anonymous';img.src=resSaint.photo;
+  img.onload=()=>{
+    ctx.save();ctx.beginPath();ctx.arc(W/2,360,180,0,Math.PI*2);ctx.clip();
+    ctx.drawImage(img,W/2-180,180,360,360);ctx.restore();
+    // Circle border
+    ctx.strokeStyle='#d4a017';ctx.lineWidth=6;ctx.beginPath();ctx.arc(W/2,360,180,0,Math.PI*2);ctx.stroke();
+    // URL
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='16px "Segoe UI",sans-serif';
+    ctx.fillText('takvirus.github.io/saint-quiz',W/2,760);
+    const a=document.createElement('a');a.download='thanh-cua-ban.png';a.href=cnv.toDataURL('image/png');a.click();
+  };
+  img.onerror=()=>{
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='16px "Segoe UI",sans-serif';
+    ctx.fillText('takvirus.github.io/saint-quiz',W/2,760);
+    const a=document.createElement('a');a.download='thanh-cua-ban.png';a.href=cnv.toDataURL('image/png');a.click();
+  };
 }
 
-function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
-  ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
-  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
-  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
-  ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
-}
-
-function restart(){if(radarChart){radarChart.destroy();radarChart=null;}resultSaint=null;saintRevealed=false;startQuiz();}
+function restart(){cur=0;answers=[];revealed=false;resSaint=null;if(radarChart){radarChart.destroy();radarChart=null;}show('iScreen');}
 </script>
 </body>
 </html>
