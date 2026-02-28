@@ -106,11 +106,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(150d
 #rScreen{justify-content:flex-start;padding-top:16px}
 .r-head{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;text-align:center;width:100%;max-width:480px}
 
-.reveal-wrap{width:100%;max-width:480px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;margin-bottom:13px}
-.s-photo{width:100%;height:270px;object-fit:cover;object-position:top;display:block;filter:brightness(0) saturate(0);transition:filter 2.2s ease}
+.reveal-wrap{width:100%;max-width:480px;border-radius:20px;overflow:hidden;position:relative;cursor:pointer;margin-bottom:13px;aspect-ratio:1/1}
+.s-photo{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;filter:brightness(0) saturate(0);transition:filter 2.2s ease}
 .s-photo.on{filter:brightness(1) saturate(1)}
-.s-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(13,27,42,.95) 85%)}
-.s-info{position:absolute;bottom:0;left:0;right:0;padding:18px}
+.s-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 45%,rgba(13,27,42,.96) 90%)}
+.s-info{position:absolute;bottom:0;left:0;right:0;padding:18px 18px 16px}
 .s-badge{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;border-radius:50px;padding:4px 14px;font-size:12px;font-weight:800;display:inline-block;margin-bottom:8px}
 .s-name{font-size:22px;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.6);margin-bottom:2px}
 .s-title-sm{font-size:12px;color:rgba(255,255,255,.65)}
@@ -119,6 +119,31 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(150d
 @keyframes tapB{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .tap-hint span{font-size:13px;color:rgba(255,255,255,.9);background:rgba(0,0,0,.5);padding:6px 18px;border-radius:50px;backdrop-filter:blur(4px);font-weight:600}
 .tap-hint.gone{opacity:0;pointer-events:none}
+
+/* Biography modal */
+.bio-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s}
+.bio-modal.open{opacity:1;pointer-events:all}
+.bio-sheet{background:linear-gradient(180deg,#1a2744,#0d1b2a);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;transform:translateY(40px);transition:transform .35s cubic-bezier(.34,1.4,.64,1)}
+.bio-modal.open .bio-sheet{transform:translateY(0)}
+.bio-drag{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:10px;margin:0 auto 18px}
+.bio-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.bio-img{width:80px;height:80px;border-radius:12px;object-fit:cover;object-position:top;border:2px solid rgba(212,160,23,.5);flex-shrink:0}
+.bio-hinfo h2{font-size:18px;font-weight:900;margin-bottom:4px}
+.bio-hinfo p{font-size:12px;color:var(--gold2);font-weight:600}
+.bio-section{margin-bottom:16px}
+.bio-section h3{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;border-left:3px solid var(--gold);padding-left:9px}
+.bio-section p{font-size:14px;line-height:1.8;color:rgba(255,255,255,.85)}
+.bio-section blockquote{font-style:italic;font-size:14px;color:rgba(255,255,255,.9);border-left:3px solid var(--gold);padding-left:13px;line-height:1.75;margin:6px 0}
+.bio-close{width:100%;padding:14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:50px;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px}
+
+/* learn section */
+.learn-card{background:linear-gradient(135deg,rgba(30,80,30,.25),rgba(10,40,60,.25));border:1.5px solid rgba(100,200,120,.22);border-radius:18px;padding:18px;width:100%;max-width:480px;margin-bottom:13px;opacity:0;transition:opacity .8s .9s}
+.learn-card.show{opacity:1}
+.learn-card h3{font-size:11px;color:#7dda8a;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.learn-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.learn-dot{width:22px;height:22px;border-radius:50%;background:rgba(100,200,120,.2);border:1.5px solid rgba(100,200,120,.4);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px}
+.learn-txt{font-size:13.5px;line-height:1.7;color:rgba(255,255,255,.88)}
+.learn-prompt{background:rgba(100,200,120,.1);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);font-style:italic;border-left:3px solid rgba(100,200,120,.5)}
 
 .s-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.11);border-radius:18px;padding:18px;width:100%;max-width:480px;margin-bottom:13px;opacity:0;transition:opacity .8s}
 .s-card.show{opacity:1}
@@ -251,20 +276,54 @@ canvas#cfx{position:fixed;inset:0;pointer-events:none;z-index:999;display:none}
     <div class="r-sec-title">🌟 Bạn còn giống với...</div>
     <div class="runner-list" id="runnerList"></div>
   </div>
-  <div class="contemp-card" id="contempCard">
-    <h3>🙏 Thực hành chiêm niệm</h3>
-    <p id="contempTxt"></p>
+  <div class="learn-card" id="learnCard">
+    <h3>🌱 Học hỏi để nên thánh</h3>
+    <div id="learnItems"></div>
+    <div class="learn-prompt" id="learnPrompt"></div>
   </div>
   <div class="card-badge" id="cardBadge">
     <div style="font-size:26px">🎴</div>
     <div class="cb-text" id="cbTxt"></div>
   </div>
   <div class="r-actions">
-    <button class="btn" onclick="shareResult()">📤 Chia sẻ kết quả</button>
+    <button class="btn" onclick="openBio()">📖 Xem tiểu sử đầy đủ</button>
+    <button class="btn" onclick="shareResult()" style="background:linear-gradient(135deg,#1a5a3a,#0e3a22);box-shadow:0 4px 20px rgba(30,120,60,.35)">📤 Chia sẻ kết quả</button>
     <button class="btn-dl" onclick="downloadCard()">🖼️ Tải Thẻ Thánh</button>
     <button class="btn2" onclick="restart()">🔄 Làm lại</button>
   </div>
 </div>
+
+<!-- Biography Modal -->
+<div class="bio-modal" id="bioModal" onclick="closeBioOutside(event)">
+  <div class="bio-sheet">
+    <div class="bio-drag"></div>
+    <div class="bio-header">
+      <img class="bio-img" id="bioImg" src="" alt="">
+      <div class="bio-hinfo">
+        <h2 id="bioName"></h2>
+        <p id="bioTitle"></p>
+      </div>
+    </div>
+    <div class="bio-section">
+      <h3>📜 Câu nói nổi tiếng</h3>
+      <blockquote id="bioQuote"></blockquote>
+    </div>
+    <div class="bio-section">
+      <h3>✝️ Tiểu sử</h3>
+      <p id="bioDesc"></p>
+    </div>
+    <div class="bio-section">
+      <h3>🏷️ Đặc nét tính cách</h3>
+      <div id="bioTags"></div>
+    </div>
+    <div class="bio-section">
+      <h3>🙏 Thực hành hôm nay</h3>
+      <p id="bioContemp"></p>
+    </div>
+    <button class="bio-close" onclick="closeBio()">✕ Đóng</button>
+  </div>
+</div>
+
 <canvas id="shareCanvas" width="800" height="800" style="display:none"></canvas>
 
 <script>
@@ -643,9 +702,8 @@ function showResult(){
   document.getElementById('runnersWrap').classList.remove('show');
   document.getElementById('runnerList').innerHTML=runners.map(r=>`<div class="runner"><img class="runner-img" src="${r.photo}" onerror="this.src=''" alt=""><div class="runner-name">${r.name}</div><div class="runner-pct">${r.match}%</div></div>`).join('');
 
-  // Contemp
-  document.getElementById('contempCard').classList.remove('show');
-  document.getElementById('contempTxt').textContent=resSaint.contemp;
+  // Learn card reset
+  document.getElementById('learnCard').classList.remove('show');
 
   // Badge
   document.getElementById('cardBadge').classList.remove('show');
@@ -691,10 +749,54 @@ function showChartAndRunners(norm){
 
   setTimeout(()=>{
     document.getElementById('runnersWrap').classList.add('show');
-    document.getElementById('contempCard').classList.add('show');
+    buildLearnSection(resSaint, norm);
+    document.getElementById('learnCard').classList.add('show');
     document.getElementById('cardBadge').classList.add('show');
   },400);
 }
+
+// ── Learn Section ──
+function buildLearnSection(saint, norm){
+  // Pick top 3 traits of this saint
+  const top3 = TR.map(t=>({...t,v:saint.sc[t.k]||0})).sort((a,b)=>b.v-a.v).slice(0,3);
+  const LEARN_MAP={
+    courage:{icon:'🦁',txt:'Tập dũng cảm nói sự thật và bảo vệ điều đúng dù bị phản đối. Mỗi ngày chọn ít nhất một lần không im lặng trước bất công.'},
+    charity:{icon:'❤️',txt:'Thực hành yêu thương cụ thể: hỏi thăm người cô đơn, giúp đỡ mà không đợi ai nhờ, tha thứ trước khi được xin lỗi.'},
+    leadership:{icon:'🕊️',txt:'Dẫn dắt bằng tình yêu thương, không bằng quyền lực. Xây dựng người khác thay vì kiểm soát họ — đó là lãnh đạo của vị Thánh.'},
+    wisdom:{icon:'📖',txt:'Dành thời gian đọc và suy ngẫm Lời Chúa. Trước quyết định quan trọng, hãy cầu nguyện và suy xét — đừng để cảm xúc dẫn đường.'},
+    sacrifice:{icon:'🕯️',txt:'Tập từ bỏ ý muốn riêng vì người khác. Bắt đầu bằng những hy sinh nhỏ: nhường lợt, nhịn ăn vặt, cho đi thứ bạn thích.'},
+    prayer:{icon:'🙏',txt:'Xây dựng thói quen cầu nguyện hàng ngày — không cần dài, chỉ cần thành tâm. Biến những khoảnh khắc nhỏ thành cuộc gặp gỡ với Thiên Chúa.'},
+    creativity:{icon:'🎨',txt:'Dùng tài năng sáng tạo để phục vụ Chúa và tha nhân. Hát, viết, vẽ hay nấu ăn — mỗi hành động đẹp đều là lời tạ ơn Thiên Chúa.'},
+    peace:{icon:'☮️',txt:'Trở thành người kiến tạo hòa bình trong gia đình và cộng đồng. Khi xung đột xảy ra, hãy là người đầu tiên bước sang bắt tay.'},
+    humility:{icon:'🌾',txt:'Tập nhìn nhận giới hạn của mình và biết ơn. Đừng cạnh tranh để nổi bật — âm thầm phục vụ và quy mọi công trạng về Thiên Chúa.'},
+    mission:{icon:'📣',txt:'Sống như người được sai đi: mỗi cuộc gặp gỡ là cơ hội chia sẻ niềm vui Tin Mừng bằng lời nói, hành động và sự hiện diện chân thành.'},
+  };
+  const items=top3.map(t=>{
+    const m=LEARN_MAP[t.k];
+    return`<div class="learn-item"><div class="learn-dot">${m.icon}</div><div class="learn-txt"><strong>${t.l}:</strong> ${m.txt}</div></div>`;
+  }).join('');
+  document.getElementById('learnItems').innerHTML=items;
+  document.getElementById('learnPrompt').textContent=`💭 Hỏi bản thân: Nếu ${saint.name} đứng trước tình huống tôi đang gặp hôm nay, ngài sẽ làm gì? Học từ ngài một điều cụ thể và thực hành ngay hôm nay.`;
+}
+
+// ── Biography Modal ──
+function openBio(){
+  if(!resSaint)return;
+  document.getElementById('bioImg').src=resSaint.photo;
+  document.getElementById('bioName').textContent=resSaint.name;
+  document.getElementById('bioTitle').textContent=resSaint.title;
+  document.getElementById('bioQuote').textContent=resSaint.quote;
+  document.getElementById('bioDesc').textContent=resSaint.desc;
+  document.getElementById('bioTags').innerHTML=resSaint.tags.map(t=>`<span class="s-tag" style="margin:2px 4px 2px 0;display:inline-block">${t}</span>`).join('');
+  document.getElementById('bioContemp').textContent=resSaint.contemp;
+  document.getElementById('bioModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeBio(){
+  document.getElementById('bioModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeBioOutside(e){if(e.target===document.getElementById('bioModal'))closeBio();}
 
 // ── Confetti ──
 function confetti(){
