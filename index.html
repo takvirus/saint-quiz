@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bạn Giống Vị Thánh Nào? ✨</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0d1b2a;--gold:#d4a017;--gold2:#f0c040;--text:#fff;--muted:rgba(255,255,255,.55);--card:rgba(255,255,255,.07);--radius:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(150deg,#0d1b2a,#1a2744,#0f2a1e);min-height:100vh;color:var(--text);overflow-x:hidden}
+.screen{display:none;min-height:100vh;padding:24px 16px 48px;flex-direction:column;align-items:center;justify-content:center;animation:fi .4s ease}
+.screen.active{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* Stars */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;animation:tw var(--d) var(--dl) infinite}
+@keyframes tw{0%,100%{opacity:0}50%{opacity:.7}}
+.screen>*{position:relative;z-index:1}
+
+/* Buttons */
+.btn{background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;font-weight:700;font-size:16px;border:none;border-radius:50px;padding:15px 40px;cursor:pointer;box-shadow:0 4px 20px rgba(212,160,23,.4);transition:.2s;width:100%;max-width:320px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(212,160,23,.5)}
+.btn2{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:var(--text);font-weight:600;font-size:14px;border-radius:50px;padding:12px 28px;cursor:pointer;transition:.2s;width:100%;max-width:320px;margin-top:10px}
+.btn2:hover{border-color:rgba(255,255,255,.5)}
+
+/* INTRO */
+.i-icon{font-size:72px;margin-bottom:16px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.i-title{font-size:26px;font-weight:800;text-align:center;line-height:1.3;margin-bottom:10px}
+.i-title span{color:var(--gold2)}
+.i-sub{color:var(--muted);text-align:center;font-size:14px;max-width:300px;line-height:1.7;margin-bottom:28px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.chip{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.35);color:var(--gold2);border-radius:50px;padding:5px 14px;font-size:12px}
+
+/* QUIZ */
+#qScreen{justify-content:flex-start;padding-top:28px}
+.prog-wrap{width:100%;max-width:480px;margin-bottom:24px}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}
+.prog-bar{height:5px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px;transition:width .4s ease}
+.q-card{background:var(--card);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:26px 20px;width:100%;max-width:480px;margin-bottom:16px}
+.q-num{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.q-text{font-size:17px;font-weight:700;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:9px;width:100%;max-width:480px}
+.opt{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:13px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:14px;text-align:left;transition:.2s}
+.opt:hover{background:rgba(212,160,23,.12);border-color:rgba(212,160,23,.4)}
+.opt.sel{background:rgba(212,160,23,.2);border-color:var(--gold)}
+.opt-l{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;transition:.2s}
+.opt.sel .opt-l{background:var(--gold);color:#000}
+.q-nav{display:flex;gap:10px;width:100%;max-width:480px;margin-top:8px}
+.q-nav .btn{flex:1;padding:13px 16px;font-size:14px}
+.btn-back{background:rgba(255,255,255,.08);color:var(--text);box-shadow:none;border:1.5px solid rgba(255,255,255,.15)}
+
+/* LOADING */
+#ldScreen .ld-icon{font-size:56px;animation:spin 1.5s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ldScreen p{margin-top:20px;color:var(--muted);font-size:15px}
+
+/* RESULT */
+#rScreen{justify-content:flex-start;padding-top:20px}
+.r-head{text-align:center;margin-bottom:16px;width:100%;max-width:480px}
+.r-head h2{font-size:13px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.saint-card{background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border:1.5px solid rgba(255,255,255,.15);border-radius:22px;padding:26px 20px;width:100%;max-width:480px;margin-bottom:16px;text-align:center}
+.s-emoji{font-size:58px;margin-bottom:8px;display:block}
+.s-name{font-size:22px;font-weight:800;color:var(--gold2);margin-bottom:4px}
+.s-title{font-size:12px;color:var(--muted);margin-bottom:12px}
+.s-quote{font-style:italic;font-size:14px;color:rgba(255,255,255,.8);border-left:3px solid var(--gold);padding-left:12px;text-align:left;margin-bottom:14px;line-height:1.6}
+.s-desc{font-size:14px;line-height:1.7;color:rgba(255,255,255,.85);margin-bottom:16px;text-align:left}
+.s-tags{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.s-tag{background:rgba(212,160,23,.18);border:1px solid rgba(212,160,23,.35);color:var(--gold2);border-radius:50px;padding:4px 12px;font-size:12px;font-weight:600}
+.match-badge{background:rgba(212,160,23,.25);border:1.5px solid var(--gold);border-radius:50px;padding:6px 18px;font-size:13px;font-weight:700;color:var(--gold2);display:inline-block;margin-bottom:14px}
+
+/* Chart card */
+.chart-card{background:var(--card);border:1.5px solid rgba(255,255,255,.1);border-radius:22px;padding:22px 16px;width:100%;max-width:480px;margin-bottom:16px}
+.chart-card h3{text-align:center;font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:.5px;font-weight:600}
+.chart-wrap{max-width:300px;margin:0 auto}
+.bars{margin-top:18px;display:flex;flex-direction:column;gap:9px}
+.bar-row{display:flex;align-items:center;gap:9px}
+.bar-lbl{font-size:11px;color:var(--muted);width:76px;flex-shrink:0;text-align:right}
+.bar-bg{flex:1;height:7px;background:rgba(255,255,255,.09);border-radius:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width 1.2s ease}
+.bar-pct{font-size:11px;color:var(--gold2);font-weight:700;width:28px}
+
+/* Runners */
+.runners{width:100%;max-width:480px;margin-bottom:16px}
+.runners h3{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;text-align:center}
+.runner-list{display:flex;flex-direction:column;gap:9px}
+.runner{background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.runner-emoji{font-size:28px}
+.runner-info{flex:1}
+.runner-name{font-size:14px;font-weight:700}
+.runner-sub{font-size:11px;color:var(--muted)}
+.runner-pct{font-size:16px;font-weight:800;color:var(--gold2)}
+
+/* Contemplation */
+.contemp-card{background:linear-gradient(135deg,rgba(100,60,0,.25),rgba(30,60,10,.2));border:1.5px solid rgba(212,160,23,.25);border-radius:22px;padding:22px 20px;width:100%;max-width:480px;margin-bottom:16px}
+.contemp-card h3{font-size:13px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:10px}
+.contemp-card p{font-size:14px;line-height:1.75;color:rgba(255,255,255,.85)}
+
+/* Card badge */
+.card-badge{background:linear-gradient(135deg,rgba(212,160,23,.3),rgba(80,40,0,.3));border:1.5px solid var(--gold);border-radius:14px;padding:14px 18px;width:100%;max-width:480px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.card-badge .cb-icon{font-size:32px}
+.card-badge .cb-text{font-size:13px;line-height:1.6;color:rgba(255,255,255,.9)}
+.card-badge .cb-text strong{color:var(--gold2)}
+
+.r-actions{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:480px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<!-- INTRO -->
+<div class="screen active" id="iScreen">
+  <div class="i-icon">✨</div>
+  <h1 class="i-title">Bạn Giống<br><span>Vị Thánh Nào?</span></h1>
+  <p class="i-sub">Trả lời 50 câu hỏi tính cách để khám phá vị Thánh mà bạn có nhiều điểm tương đồng nhất.</p>
+  <div class="chips">
+    <span class="chip">🕊️ 20 Vị Thánh</span>
+    <span class="chip">❓ 50 Câu hỏi</span>
+    <span class="chip">📊 Radar Chart</span>
+    <span class="chip">⏱️ ~7 phút</span>
+  </div>
+  <button class="btn" onclick="startQuiz()">Bắt đầu ngay ✨</button>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="qScreen">
+  <div class="prog-wrap">
+    <div class="prog-info"><span id="pLabel">Câu 1 / 50</span><span id="pPct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+  </div>
+  <div class="q-card">
+    <div class="q-num" id="qNum">CÂU 01</div>
+    <div class="q-text" id="qText"></div>
+  </div>
+  <div class="opts" id="optsWrap"></div>
+  <div class="q-nav">
+    <button class="btn btn-back" id="backBtn" onclick="prev()" style="display:none">← Quay lại</button>
+    <button class="btn" id="nextBtn" onclick="next()" disabled>Tiếp theo →</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="screen" id="ldScreen">
+  <div class="ld-icon">✝️</div>
+  <p>Đang tìm vị Thánh của bạn...</p>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="rScreen">
+  <div class="r-head"><h2>🎉 Kết quả của bạn</h2></div>
+  <div class="saint-card">
+    <span class="s-emoji" id="sEmoji"></span>
+    <div class="match-badge" id="sMatch"></div>
+    <div class="s-name" id="sName"></div>
+    <div class="s-title" id="sTitle"></div>
+    <div class="s-quote" id="sQuote"></div>
+    <div class="s-desc" id="sDesc"></div>
+    <div class="s-tags" id="sTags"></div>
+  </div>
+  <div class="chart-card">
+    <h3>HỒ SƠ TÍNH CÁCH CỦA BẠN</h3>
+    <div class="chart-wrap"><canvas id="radar"></canvas></div>
+    <div class="bars" id="bars"></div>
+  </div>
+  <div class="runners">
+    <h3>🌟 Bạn còn giống với...</h3>
+    <div class="runner-list" id="runners"></div>
+  </div>
+  <div class="contemp-card">
+    <h3>🙏 Nội dung chiêm niệm</h3>
+    <p id="contemp"></p>
+  </div>
+  <div class="card-badge">
+    <div class="cb-icon">🎴</div>
+    <div class="cb-text" id="cardBadge"></div>
+  </div>
+  <div class="r-actions">
+    <button class="btn" onclick="share()">📤 Chia sẻ kết quả</button>
+    <button class="btn2" onclick="restart()">🔄 Làm lại trắc nghiệm</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// TRAITS
+// ═══════════════════════════════════════════
+const TR = [
+  {k:'courage',    l:'Dũng Cảm'},
+  {k:'charity',    l:'Yêu Thương'},
+  {k:'leadership', l:'Lãnh Đạo'},
+  {k:'wisdom',     l:'Thông Thái'},
+  {k:'sacrifice',  l:'Hy Sinh'},
+  {k:'prayer',     l:'Cầu Nguyện'},
+  {k:'creativity', l:'Sáng Tạo'},
+  {k:'peace',      l:'Bình An'},
+  {k:'humility',   l:'Khiêm Nhường'},
+  {k:'mission',    l:'Truyền Giáo'},
+];
+
+// ═══════════════════════════════════════════
+// SAINTS (20)
+// ═══════════════════════════════════════════
+const SAINTS = [
+  {
+    emoji:'💙', name:'Thánh Têrêsa Calcutta', title:'Mẹ của người nghèo',
+    quote:'"Nếu bạn xét đoán người khác, bạn không còn thời gian để yêu thương họ nữa."',
+    desc:'Dành trọn cuộc đời phục vụ người nghèo khổ và hấp hối trên đường phố Calcutta. Mẹ tin rằng mỗi người gặp gỡ đều là Chúa Giêsu trong một dạng khác. Tình yêu của Mẹ không phân biệt ai.',
+    contemp:'Hôm nay, hãy thực hiện một hành động yêu thương nhỏ cho người bạn thường bỏ qua — một nụ cười, một lời hỏi thăm, hoặc chia sẻ bữa ăn. Làm điều đó trong thinh lặng, không cần ai biết.',
+    tags:['#YêuThương','#PhụcVụ','#KhiêmNhường','#HySinh'],
+    scores:{courage:3,charity:5,leadership:3,wisdom:2,sacrifice:5,prayer:4,creativity:2,peace:3,humility:5,mission:3}
+  },
+  {
+    emoji:'🌿', name:'Thánh Phanxicô Assisi', title:'Người anh em của mọi loài',
+    quote:'"Chúa ơi, xin làm cho con trở nên khí cụ bình an của Chúa."',
+    desc:'Từ bỏ gia sản giàu có để sống nghèo hèn, rao giảng Tin Mừng cho muông thú và con người. Thánh Phanxicô xây dựng những nhịp cầu hòa giải và nhìn thấy Thiên Chúa trong mọi thụ tạo.',
+    contemp:'Ra ngoài thiên nhiên 15 phút, quan sát một cây cối, con chim hay bông hoa. Tạ ơn Chúa vì vẻ đẹp đó và cầu nguyện cho hòa bình trong tâm hồn bạn.',
+    tags:['#BìnhAn','#YêuThương','#KhiêmNhường','#SángTạo'],
+    scores:{courage:3,charity:5,leadership:2,wisdom:3,sacrifice:4,prayer:4,creativity:4,peace:5,humility:5,mission:3}
+  },
+  {
+    emoji:'⚓', name:'Thánh Phêrô Tông Đồ', title:'Tảng đá của Giáo Hội',
+    quote:'"Thưa Thầy, bỏ Thầy chúng con biết theo ai? Thầy mới có những lời đem lại sự sống đời đời."',
+    desc:'Dù từng chối Chúa ba lần, Phêrô đã đứng dậy và dẫn dắt Giáo Hội sơ khai với lòng dũng cảm kiên định. Hành trình của Phêrô nhắc nhở rằng sức mạnh thật sự được xây từ những lần vấp ngã và trỗi dậy.',
+    contemp:'Nghĩ đến một lần bạn đã thất bại hay phạm sai lầm. Hãy xin Chúa tha thứ và đứng dậy như Phêrô — không phải vì bạn xứng đáng, mà vì Chúa tin vào bạn.',
+    tags:['#LãnhĐạo','#DũngCảm','#TruyềnGiáo'],
+    scores:{courage:5,charity:3,leadership:5,wisdom:3,sacrifice:3,prayer:3,creativity:2,peace:2,humility:2,mission:4}
+  },
+  {
+    emoji:'✝️', name:'Thánh Gioan Phaolô II', title:'Vị Giáo Hoàng của Giới Trẻ',
+    quote:'"Đừng sợ! Hãy mở rộng cửa cho Đức Kitô!"',
+    desc:'Nhà lãnh đạo kết hợp trí tuệ sâu sắc với tình yêu truyền giáo mãnh liệt. Ngài đi khắp thế giới mang Tin Mừng và đã thay đổi lịch sử với sức mạnh của đức tin không sợ hãi.',
+    contemp:'Hôm nay hãy làm một điều bạn từ lâu sợ làm vì đức tin — chia sẻ một câu Kinh Thánh, mời bạn bè đến lễ, hoặc công khai cầu nguyện trước bữa ăn.',
+    tags:['#LãnhĐạo','#TruyềnGiáo','#ThôngThái','#BìnhAn'],
+    scores:{courage:4,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:4,humility:3,mission:5}
+  },
+  {
+    emoji:'📚', name:'Thánh Tôma Aquinô', title:'Tiến sĩ Thiên thần',
+    quote:'"Đức tin tìm kiếm sự hiểu biết."',
+    desc:'Bộ óc thần học vĩ đại nhất của Giáo Hội, dùng lý trí và đức tin để xây dựng nền triết học Kitô giáo. Tôma tin rằng chân lý không sợ bất kỳ câu hỏi nào.',
+    contemp:'Dành 10 phút đọc chậm một đoạn Kinh Thánh hoặc giáo lý, rồi tự hỏi: "Điều này có nghĩa gì với cuộc sống mình hôm nay?" Ghi lại suy nghĩ.',
+    tags:['#ThôngThái','#SángTạo','#CầuNguyện'],
+    scores:{courage:2,charity:3,leadership:2,wisdom:5,sacrifice:2,prayer:4,creativity:4,peace:3,humility:3,mission:2}
+  },
+  {
+    emoji:'✍️', name:'Thánh Augustinô', title:'Tiến sĩ Ân Sủng',
+    quote:'"Lòng con khắc khoải cho đến khi được nghỉ ngơi trong Chúa."',
+    desc:'Từ cuộc đời đầy sóng gió và hoang đàng, Augustinô tìm được Thiên Chúa và trở thành nhà thần học vĩ đại. Hành trình của ngài là niềm hy vọng cho mọi người đang tìm kiếm ý nghĩa cuộc sống.',
+    contemp:'Viết một đoạn nhật ký ngắn về hành trình đức tin của bạn — những lúc xa Chúa, những lúc trở về. Đây là lời cầu nguyện của riêng bạn.',
+    tags:['#ThôngThái','#CầuNguyện','#SángTạo'],
+    scores:{courage:3,charity:3,leadership:3,wisdom:5,sacrifice:3,prayer:5,creativity:4,peace:2,humility:3,mission:3}
+  },
+  {
+    emoji:'🌹', name:'Các Thánh Tử Đạo Việt Nam', title:'Chứng nhân đức tin trên quê hương',
+    quote:'"Tôi sẵn sàng chịu mọi cực hình chứ không chối bỏ đức tin."',
+    desc:'Hơn 100,000 người Công Giáo Việt Nam đã can đảm chịu chết vì đức tin qua nhiều thế kỷ bách hại. Họ không sợ hãi, không chối bỏ, để lại di sản đức tin vẫn sống động đến hôm nay.',
+    contemp:'Đọc tên một vị Thánh Tử Đạo Việt Nam mà bạn biết. Suy nghĩ: điều gì đã giữ họ vững trong thử thách? Điều gì đang thử thách đức tin của bạn hôm nay?',
+    tags:['#DũngCảm','#HySinh','#CầuNguyện','#KhiêmNhường'],
+    scores:{courage:5,charity:3,leadership:3,wisdom:2,sacrifice:5,prayer:5,creativity:1,peace:3,humility:4,mission:3}
+  },
+  {
+    emoji:'🕊️', name:'Thánh Maximilian Kolbe', title:'Vị tử đạo của tình yêu',
+    quote:'"Chỉ có tình yêu mới có thể chinh phục thù hận."',
+    desc:'Linh mục Ba Lan tình nguyện chết thay cho một người cha có gia đình trong trại tập trung Auschwitz. Câu chuyện của ngài là minh chứng sống động nhất về tình yêu hy sinh không điều kiện.',
+    contemp:'Hôm nay, từ bỏ một điều bạn muốn để nhường cho người khác — chỗ ngồi, phần ăn, thời gian. Làm trong im lặng và nhớ đến Thánh Maximilian.',
+    tags:['#HySinh','#DũngCảm','#YêuThương'],
+    scores:{courage:5,charity:4,leadership:3,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:3,humility:4,mission:3}
+  },
+  {
+    emoji:'🌸', name:'Thánh Têrêsa Hài Đồng Giêsu', title:'Con đường thơ ấu thiêng liêng',
+    quote:'"Ơn gọi của tôi là Tình Yêu."',
+    desc:'Không đi truyền giáo xa hay làm phép lạ vĩ đại — nhưng làm mọi việc nhỏ với tình yêu to lớn. Con đường nhỏ bé của Têrêsa đã trở thành ánh sáng cho hàng triệu tâm hồn.',
+    contemp:'Chọn một việc nhỏ nhất trong ngày hôm nay — rửa chén, chào hỏi đồng nghiệp, nhặt rác — và làm nó với tất cả tình yêu. Đó là lời cầu nguyện của bạn.',
+    tags:['#CầuNguyện','#KhiêmNhường','#YêuThương'],
+    scores:{courage:3,charity:4,leadership:2,wisdom:3,sacrifice:4,prayer:5,creativity:3,peace:4,humility:5,mission:3}
+  },
+  {
+    emoji:'🌙', name:'Thánh Gioan Thánh Giá', title:'Bậc thầy chiêm niệm',
+    quote:'"Trong buổi chiều cuộc đời, bạn sẽ bị xét xử về tình yêu."',
+    desc:'Nhà thơ và thần học gia chiêm niệm vĩ đại, viết về "Đêm tối tâm hồn" — hành trình thiêng liêng qua bóng tối để đến với ánh sáng Thiên Chúa. Ngài dạy rằng trống rỗng là điều kiện để Chúa điền đầy.',
+    contemp:'Tắt điện thoại 20 phút. Ngồi yên trong bóng tối hoặc ánh nến. Không cầu nguyện bằng lời, chỉ hiện diện trước Thiên Chúa trong thinh lặng.',
+    tags:['#CầuNguyện','#HySinh','#KhiêmNhường','#ThôngThái'],
+    scores:{courage:4,charity:3,leadership:2,wisdom:4,sacrifice:4,prayer:5,creativity:3,peace:3,humility:5,mission:2}
+  },
+  {
+    emoji:'🎨', name:'Thánh Hildegard of Bingen', title:'Nhà tiên tri sáng tạo',
+    quote:'"Tôi, một ngọn lửa nhỏ, chiếu sáng nhờ ánh sáng của Thiên Chúa."',
+    desc:'Nhà thần học, nhạc sĩ, họa sĩ và thầy thuốc của thế kỷ 12. Hildegard tin rằng mọi tài năng sáng tạo đều là hơi thở của Thiên Chúa trong con người, và nghệ thuật là lời cầu nguyện.',
+    contemp:'Hãy sáng tạo điều gì đó hôm nay vì Chúa — vẽ một bức tranh đơn giản, viết vài dòng thơ, hoặc hát một bài thánh ca. Không cần hoàn hảo, chỉ cần thành tâm.',
+    tags:['#SángTạo','#ThôngThái','#CầuNguyện'],
+    scores:{courage:3,charity:3,leadership:3,wisdom:4,sacrifice:2,prayer:4,creativity:5,peace:3,humility:3,mission:2}
+  },
+  {
+    emoji:'🤝', name:'Thánh Martin de Porres', title:'Người anh em của mọi người',
+    quote:'"Hãy yêu thương người nghèo và phục vụ họ — đó là con đường ngắn nhất đến với Thiên Chúa."',
+    desc:'Sinh ra trong bất bình đẳng nhưng trở thành biểu tượng của bình an và yêu thương. Martin chữa lành bệnh nhân, chăm sóc động vật và không bao giờ phân biệt sang hèn.',
+    contemp:'Hôm nay, hãy làm hòa với một người bạn đang có xích mích hoặc mang lại nụ cười cho ai đó đang buồn. Bình an của Chúa bắt đầu từ những cử chỉ nhỏ.',
+    tags:['#BìnhAn','#YêuThương','#KhiêmNhường'],
+    scores:{courage:2,charity:5,leadership:2,wisdom:2,sacrifice:4,prayer:4,creativity:3,peace:5,humility:5,mission:2}
+  },
+  {
+    emoji:'⛵', name:'Thánh Phanxicô Xaviê', title:'Sứ giả Châu Á',
+    quote:'"Hãy cho tôi biết ngọn lửa nào đã thiêu đốt trái tim tôi khi tôi nhìn thấy những linh hồn chưa biết Chúa."',
+    desc:'Nhà truyền giáo vĩ đại nhất sau thời Tông Đồ, mang Tin Mừng đến Ấn Độ, Nhật Bản và khắp Châu Á. Xaviê tin rằng đức tin không có biên giới và tình yêu Chúa dành cho mọi dân tộc.',
+    contemp:'Cầu nguyện cho một người bạn biết chưa có đức tin. Xin Chúa mở cửa trái tim họ và xin Ngài dùng bạn như một nhịp cầu đến với họ.',
+    tags:['#TruyềnGiáo','#DũngCảm','#HySinh'],
+    scores:{courage:5,charity:3,leadership:4,wisdom:3,sacrifice:5,prayer:3,creativity:2,peace:2,humility:2,mission:5}
+  },
+  {
+    emoji:'⚡', name:'Thánh Phaolô Tông Đồ', title:'Ngọn lửa Tin Mừng',
+    quote:'"Tôi có thể làm mọi sự trong Đấng ban sức mạnh cho tôi."',
+    desc:'Từ kẻ bách hại Kitô hữu trở thành nhà truyền giáo vĩ đại nhất. Hành trình Phaolô nhắc nhở: không ai quá xa để được Thiên Chúa biến đổi và sai đi.',
+    contemp:'Nhớ lại một khoảnh khắc Chúa đã thay đổi bạn — dù nhỏ. Chia sẻ câu chuyện đó với ít nhất một người trong tuần này.',
+    tags:['#TruyềnGiáo','#DũngCảm','#LãnhĐạo'],
+    scores:{courage:5,charity:3,leadership:5,wisdom:4,sacrifice:4,prayer:3,creativity:3,peace:2,humility:2,mission:5}
+  },
+  {
+    emoji:'🌾', name:'Thánh Giuse', title:'Người cha âm thầm',
+    quote:'"Đừng sợ, cứ đón Maria về." (Lời Thiên Thần với Giuse)',
+    desc:'Người cha âm thầm, không có một lời nói nào được ghi lại trong Kinh Thánh — nhưng trung tín trong từng bước đi. Giuse dạy rằng sự trung thành trong bóng tối là đức hạnh cao quý nhất.',
+    contemp:'Hôm nay, thực hiện một nhiệm vụ nhỏ trong gia đình hay công việc mà không ai yêu cầu và không cần ai ghi nhận. Làm vì tình yêu.',
+    tags:['#KhiêmNhường','#HySinh','#BìnhAn','#DũngCảm'],
+    scores:{courage:4,charity:3,leadership:2,wisdom:3,sacrifice:5,prayer:4,creativity:2,peace:5,humility:5,mission:2}
+  },
+  {
+    emoji:'🔥', name:'Thánh Gioan Tẩy Giả', title:'Người dọn đường',
+    quote:'"Người phải lớn lên, còn tôi phải nhỏ lại."',
+    desc:'Sống trong sa mạc, ăn châu chấu và mật ong rừng, rao giảng sự hoán cải không khoan nhượng. Gioan dọn đường cho Đấng Cứu Thế với sự dũng cảm không sợ cường quyền.',
+    contemp:'Xem xét cuộc sống bạn: điều gì cần "dọn dẹp" để Chúa có chỗ? Hãy thống hối một điều cụ thể hôm nay — xin lỗi ai đó, bỏ một thói quen xấu.',
+    tags:['#DũngCảm','#TruyềnGiáo','#HySinh','#CầuNguyện'],
+    scores:{courage:5,charity:2,leadership:3,wisdom:3,sacrifice:5,prayer:5,creativity:2,peace:2,humility:3,mission:4}
+  },
+  {
+    emoji:'💜', name:'Thánh Maria Mađalêna', title:'Tông đồ của các Tông đồ',
+    quote:'"Tôi đã thấy Chúa!" — người đầu tiên loan báo Phục Sinh.',
+    desc:'Người phụ nữ được Chúa thứ tha và trở thành chứng nhân đầu tiên của Phục Sinh. Maria Mađalêna dạy rằng tình yêu trung thành và lòng biết ơn có thể biến đổi hoàn toàn một cuộc đời.',
+    contemp:'Nghĩ đến một ơn lành Chúa đã ban mà bạn đã quên tạ ơn. Hôm nay hãy cầu nguyện lời tạ ơn đó và chia sẻ niềm vui với người thân.',
+    tags:['#YêuThương','#CầuNguyện','#KhiêmNhường'],
+    scores:{courage:3,charity:5,leadership:2,wisdom:3,sacrifice:3,prayer:5,creativity:3,peace:4,humility:4,mission:3}
+  },
+  {
+    emoji:'📿', name:'Thánh Đa Minh', title:'Người rao giảng sự thật',
+    quote:'"Hãy nói về Chúa hay nói với Chúa — đừng lãng phí lời nói."',
+    desc:'Sáng lập Dòng Giảng Thuyết, dùng kiến thức và lời giảng để bảo vệ đức tin. Đa Minh tin rằng chân lý được rao giảng bằng tình yêu có sức mạnh thay đổi thế giới.',
+    contemp:'Hôm nay hãy chia sẻ một điều bạn biết về đức tin với một người — không cần dài, chỉ cần chân thành. Một câu Kinh Thánh, một câu chuyện về Thánh.',
+    tags:['#TruyềnGiáo','#ThôngThái','#LãnhĐạo'],
+    scores:{courage:3,charity:3,leadership:4,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:5}
+  },
+  {
+    emoji:'🎯', name:'Thánh Inhaxiô Loyola', title:'Người lính của Đức Kitô',
+    quote:'"Làm mọi sự vì vinh quang cao hơn của Thiên Chúa — Ad Majorem Dei Gloriam."',
+    desc:'Cựu chiến binh trở thành nhà lãnh đạo tinh thần vĩ đại, sáng lập Dòng Tên và xây dựng hệ thống linh thao (Spiritual Exercises) giúp hàng triệu người khám phá ơn gọi của mình.',
+    contemp:'Thử một bài linh thao ngắn: trong 5 phút, xem xét ngày hôm nay — khoảnh khắc nào bạn cảm thấy gần Chúa nhất? Xa Chúa nhất? Hãy ghi lại.',
+    tags:['#LãnhĐạo','#ThôngThái','#DũngCảm','#TruyềnGiáo'],
+    scores:{courage:5,charity:3,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:5}
+  },
+  {
+    emoji:'👑', name:'Thánh Catarina Siena', title:'Tiến sĩ Giáo Hội',
+    quote:'"Hãy là người bạn muốn trở thành."',
+    desc:'Người phụ nữ không biết chữ nhưng đã thuyết phục Giáo Hoàng trở về Roma và cải tổ Giáo Hội. Catarina dạy rằng tình yêu dũng cảm và lời cầu nguyện kiên trì có thể thay đổi cả thế giới.',
+    contemp:'Nhìn vào một vấn đề lớn trong Giáo Hội hay xã hội mà bạn thường than thở. Hôm nay thay vì than thở, hãy cầu nguyện một lời nguyện xin cụ thể và suy nghĩ bạn có thể làm gì.',
+    tags:['#DũngCảm','#ThôngThái','#LãnhĐạo','#YêuThương'],
+    scores:{courage:5,charity:4,leadership:5,wisdom:5,sacrifice:3,prayer:4,creativity:3,peace:3,humility:3,mission:4}
+  },
+];
+
+// ═══════════════════════════════════════════
+// QUESTIONS (50)
+// ═══════════════════════════════════════════
+const QS = [
+  // COURAGE (5)
+  {q:'Khi bị áp lực từ bỏ đức tin, bạn sẽ:',opts:[
+    {t:'Giữ vững lập trường dù bị chê cười',k:'courage'},
+    {t:'Cầu nguyện xin sức mạnh',k:'prayer'},
+    {t:'Tìm hiểu kỹ xem đức tin thực sự là gì',k:'wisdom'},
+    {t:'Tìm cộng đoàn để được nâng đỡ',k:'leadership'},
+    {t:'Chia sẻ với người thân để cùng vượt qua',k:'charity'}]},
+  {q:'Trước một quyết định khó khăn liên quan đến đức tin, bạn:',opts:[
+    {t:'Dứt khoát hành động theo lương tâm',k:'courage'},
+    {t:'Cầu nguyện và phó thác cho Chúa',k:'prayer'},
+    {t:'Nghiên cứu và suy xét cẩn thận',k:'wisdom'},
+    {t:'Hy sinh sở thích cá nhân để làm điều đúng',k:'sacrifice'},
+    {t:'Hòa giải và tìm giải pháp dung hòa',k:'peace'}]},
+  {q:'Khi thấy bất công xảy ra trước mắt, bạn:',opts:[
+    {t:'Lên tiếng ngay dù có thể bị trả thù',k:'courage'},
+    {t:'Giúp đỡ nạn nhân ngay lập tức',k:'charity'},
+    {t:'Tìm người có thẩm quyền để can thiệp',k:'leadership'},
+    {t:'Cầu nguyện và tin Chúa sẽ xét xử công bằng',k:'prayer'},
+    {t:'Dùng nghệ thuật để tố cáo bất công',k:'creativity'}]},
+  {q:'Điều gì giúp bạn mạnh mẽ nhất khi đối mặt khó khăn?',opts:[
+    {t:'Ý chí kiên định không bao giờ bỏ cuộc',k:'courage'},
+    {t:'Lời cầu nguyện và sự hiện diện của Chúa',k:'prayer'},
+    {t:'Tình yêu thương và sự hỗ trợ từ người thân',k:'charity'},
+    {t:'Sự hiểu biết về ý nghĩa của thử thách',k:'wisdom'},
+    {t:'Sứ mạng lớn hơn bản thân mình',k:'mission'}]},
+  {q:'Bạn nghĩ anh hùng thật sự là người:',opts:[
+    {t:'Dám đứng lên khi mọi người im lặng',k:'courage'},
+    {t:'Hy sinh bản thân vì người khác',k:'sacrifice'},
+    {t:'Dẫn dắt người khác trong khủng hoảng',k:'leadership'},
+    {t:'Mang lại bình an trong hỗn loạn',k:'peace'},
+    {t:'Trung thành với sứ mạng đến cùng',k:'mission'}]},
+  // CHARITY (5)
+  {q:'Khi nghe tin có người gặp hoạn nạn, điều đầu tiên bạn làm là:',opts:[
+    {t:'Lập tức đến giúp hoặc liên hệ ngay',k:'charity'},
+    {t:'Cầu nguyện cho họ',k:'prayer'},
+    {t:'Kêu gọi mọi người cùng giúp',k:'leadership'},
+    {t:'Tìm hiểu nguyên nhân và giải pháp',k:'wisdom'},
+    {t:'Chia sẻ câu chuyện để tạo nhận thức',k:'mission'}]},
+  {q:'Người bạn thân nhất của bạn sẽ mô tả bạn là người:',opts:[
+    {t:'Luôn sẵn sàng lắng nghe và giúp đỡ',k:'charity'},
+    {t:'Suy nghĩ sâu sắc và hay chia sẻ kiến thức',k:'wisdom'},
+    {t:'Truyền cảm hứng và dẫn dắt người khác',k:'leadership'},
+    {t:'Cầu nguyện và tin tưởng vào Chúa',k:'prayer'},
+    {t:'Sáng tạo và đầy ý tưởng mới',k:'creativity'}]},
+  {q:'Điều nào khiến bạn hạnh phúc nhất?',opts:[
+    {t:'Thấy người mình giúp đỡ mỉm cười',k:'charity'},
+    {t:'Hiểu được điều gì đó sâu sắc hơn về đức tin',k:'wisdom'},
+    {t:'Hoàn thành một dự án sáng tạo đẹp',k:'creativity'},
+    {t:'Cảm thấy bình an trong cầu nguyện',k:'prayer'},
+    {t:'Nghe tin ai đó đón nhận Tin Mừng',k:'mission'}]},
+  {q:'Khi thấy người cô đơn trong bữa tiệc, bạn:',opts:[
+    {t:'Ngay lập tức đến ngồi trò chuyện với họ',k:'charity'},
+    {t:'Giới thiệu họ với những người khác',k:'leadership'},
+    {t:'Tạo một hoạt động để kéo mọi người lại',k:'creativity'},
+    {t:'Cầu nguyện cho họ và quan sát',k:'prayer'},
+    {t:'Mỉm cười và tạo không khí thoải mái',k:'peace'}]},
+  {q:'Loại phim/câu chuyện nào cảm động bạn nhất?',opts:[
+    {t:'Câu chuyện về tình yêu thương và sự hy sinh',k:'charity'},
+    {t:'Hành trình khám phá chân lý và ý nghĩa sống',k:'wisdom'},
+    {t:'Người anh hùng vượt qua mọi nghịch cảnh',k:'courage'},
+    {t:'Nhà truyền giáo dũng cảm đến vùng đất xa',k:'mission'},
+    {t:'Nghệ sĩ tạo ra tác phẩm thay đổi thế giới',k:'creativity'}]},
+  // LEADERSHIP (5)
+  {q:'Trong một nhóm dự án, vai trò tự nhiên của bạn là:',opts:[
+    {t:'Người đặt ra tầm nhìn và dẫn dắt cả nhóm',k:'leadership'},
+    {t:'Người phân tích và đưa ra giải pháp tốt nhất',k:'wisdom'},
+    {t:'Người đảm bảo mọi người đều được lắng nghe',k:'peace'},
+    {t:'Người sáng tạo ra ý tưởng mới mẻ',k:'creativity'},
+    {t:'Người làm phần việc khó nhất âm thầm',k:'sacrifice'}]},
+  {q:'Điều bạn muốn để lại cho thế hệ sau nhất là:',opts:[
+    {t:'Một cộng đoàn đức tin vững mạnh',k:'leadership'},
+    {t:'Kiến thức và sự hiểu biết về đức tin',k:'wisdom'},
+    {t:'Tình yêu thương và sự chăm sóc',k:'charity'},
+    {t:'Tác phẩm nghệ thuật hoặc sáng tạo',k:'creativity'},
+    {t:'Chứng tá về đức tin dũng cảm',k:'courage'}]},
+  {q:'Khi nhóm đang mất phương hướng, bạn:',opts:[
+    {t:'Đứng lên đề xuất hướng đi rõ ràng',k:'leadership'},
+    {t:'Phân tích tình hình và đưa ra lựa chọn',k:'wisdom'},
+    {t:'Cầu nguyện xin ơn soi sáng cho cả nhóm',k:'prayer'},
+    {t:'Khích lệ tinh thần mọi người',k:'charity'},
+    {t:'Đề xuất ý tưởng sáng tạo để thay đổi cách tiếp cận',k:'creativity'}]},
+  {q:'Bạn nghĩ lãnh đạo tốt nhất khi nào?',opts:[
+    {t:'Dám đưa ra quyết định khó và chịu trách nhiệm',k:'leadership'},
+    {t:'Lắng nghe và hiểu mọi người trước khi hành động',k:'wisdom'},
+    {t:'Phục vụ người khác hơn là được phục vụ',k:'charity'},
+    {t:'Truyền cảm hứng qua gương sống của mình',k:'mission'},
+    {t:'Kiên nhẫn và không nóng vội',k:'peace'}]},
+  {q:'Điều bạn thấy khó nhất khi dẫn dắt người khác là:',opts:[
+    {t:'Ra quyết định khi có nhiều ý kiến trái chiều',k:'leadership'},
+    {t:'Giải thích cho người khác hiểu tầm nhìn của mình',k:'wisdom'},
+    {t:'Yêu thương những người không đồng ý với mình',k:'charity'},
+    {t:'Kiên nhẫn khi mọi thứ diễn ra chậm chạp',k:'peace'},
+    {t:'Hy sinh thời gian và sức lực cá nhân',k:'sacrifice'}]},
+  // WISDOM (5)
+  {q:'Khi gặp một câu hỏi khó về đức tin, bạn:',opts:[
+    {t:'Tìm đọc sách và nghiên cứu kỹ lưỡng',k:'wisdom'},
+    {t:'Cầu nguyện và xin Chúa soi sáng',k:'prayer'},
+    {t:'Hỏi linh mục hoặc người có kinh nghiệm',k:'leadership'},
+    {t:'Chia sẻ câu hỏi đó với cộng đoàn',k:'charity'},
+    {t:'Tin tưởng và sống theo đức tin dù chưa hiểu hết',k:'courage'}]},
+  {q:'Loại sách bạn thích đọc nhất:',opts:[
+    {t:'Thần học, triết học và lịch sử Giáo Hội',k:'wisdom'},
+    {t:'Hạnh Thánh và gương sáng đức hạnh',k:'prayer'},
+    {t:'Sách về lãnh đạo và truyền cảm hứng',k:'leadership'},
+    {t:'Văn học và nghệ thuật mang giá trị nhân văn',k:'creativity'},
+    {t:'Câu chuyện về truyền giáo và sứ mạng',k:'mission'}]},
+  {q:'Điều bạn thấy thú vị nhất trong đức tin Công Giáo là:',opts:[
+    {t:'Chiều sâu triết học và thần học',k:'wisdom'},
+    {t:'Đời sống cầu nguyện và chiêm niệm',k:'prayer'},
+    {t:'Lịch sử truyền giáo đến khắp thế giới',k:'mission'},
+    {t:'Nghệ thuật, kiến trúc và âm nhạc thánh',k:'creativity'},
+    {t:'Tình yêu thương phục vụ người nghèo',k:'charity'}]},
+  {q:'Khi ai đó hỏi bạn về đức tin, bạn thường:',opts:[
+    {t:'Giải thích có hệ thống từ căn bản đến nâng cao',k:'wisdom'},
+    {t:'Chia sẻ câu chuyện cá nhân và chứng tá sống',k:'mission'},
+    {t:'Mời họ tham gia các hoạt động của cộng đoàn',k:'leadership'},
+    {t:'Dùng ví dụ từ nghệ thuật và văn hóa',k:'creativity'},
+    {t:'Đơn giản sống tốt để họ tự nhận ra',k:'humility'}]},
+  {q:'Trong buổi học Kinh Thánh, bạn thích nhất khi:',opts:[
+    {t:'Đào sâu ý nghĩa thần học của từng đoạn',k:'wisdom'},
+    {t:'Chia sẻ cảm nhận cá nhân và câu chuyện',k:'charity'},
+    {t:'Thảo luận sôi nổi về cách áp dụng',k:'leadership'},
+    {t:'Im lặng suy ngẫm sau khi đọc',k:'prayer'},
+    {t:'Tìm hiểu bối cảnh lịch sử văn hóa',k:'creativity'}]},
+  // SACRIFICE (5)
+  {q:'Điều bạn sẵn sàng từ bỏ nhất vì đức tin:',opts:[
+    {t:'Tiện nghi và sung sướng cá nhân',k:'sacrifice'},
+    {t:'Danh tiếng và sự nổi tiếng',k:'humility'},
+    {t:'Sự an toàn khi đứng lên vì điều đúng',k:'courage'},
+    {t:'Kế hoạch riêng để phục vụ người cần giúp',k:'charity'},
+    {t:'Ở lại quê nhà để ra đi truyền giáo',k:'mission'}]},
+  {q:'Khi phải chọn giữa lợi ích bản thân và người khác, bạn:',opts:[
+    {t:'Nhường người khác dù thiệt cho mình',k:'sacrifice'},
+    {t:'Tìm cách dung hòa để cả hai đều được',k:'peace'},
+    {t:'Quyết định theo điều Chúa muốn',k:'prayer'},
+    {t:'Đặt câu hỏi và phân tích cẩn thận',k:'wisdom'},
+    {t:'Dũng cảm làm điều đúng dù tốn kém',k:'courage'}]},
+  {q:'Hình ảnh nào về Chúa Giêsu cảm động bạn nhất?',opts:[
+    {t:'Chúa chịu đóng đinh hy sinh trên thập giá',k:'sacrifice'},
+    {t:'Chúa yêu thương và chữa lành bệnh nhân',k:'charity'},
+    {t:'Chúa dạy dỗ đám đông với uy quyền',k:'leadership'},
+    {t:'Chúa cầu nguyện một mình trong vườn cây dầu',k:'prayer'},
+    {t:'Chúa Phục Sinh hiện ra trong niềm vui',k:'mission'}]},
+  {q:'Mùa Chay với bạn có nghĩa là:',opts:[
+    {t:'Thực hành hy sinh và từ bỏ cụ thể',k:'sacrifice'},
+    {t:'Tăng cường cầu nguyện và thinh lặng',k:'prayer'},
+    {t:'Làm việc bác ái nhiều hơn',k:'charity'},
+    {t:'Suy ngẫm sâu hơn về đức tin',k:'wisdom'},
+    {t:'Cơ hội để hoán cải và làm mới bản thân',k:'humility'}]},
+  {q:'Điều bạn ngưỡng mộ nhất ở các Thánh Tử Đạo là:',opts:[
+    {t:'Sẵn sàng chết vì không chối bỏ đức tin',k:'sacrifice'},
+    {t:'Lòng dũng cảm không lay chuyển',k:'courage'},
+    {t:'Sự bình an trong khi chịu đau khổ',k:'peace'},
+    {t:'Đức tin vững vàng dù bị bách hại',k:'prayer'},
+    {t:'Trở thành nhân chứng cho những người xem',k:'mission'}]},
+  // PRAYER (5)
+  {q:'Hình thức cầu nguyện bạn thích nhất:',opts:[
+    {t:'Chiêm niệm trong thinh lặng trước Thánh Thể',k:'prayer'},
+    {t:'Đọc kinh chung với gia đình',k:'charity'},
+    {t:'Hát thánh ca trong Thánh Lễ',k:'creativity'},
+    {t:'Đọc Kinh Thánh và suy ngẫm',k:'wisdom'},
+    {t:'Cầu nguyện tự phát từ trái tim',k:'humility'}]},
+  {q:'Khi cuộc sống bộn bề, bạn tìm sức mạnh từ:',opts:[
+    {t:'Cầu nguyện và thinh lặng với Chúa',k:'prayer'},
+    {t:'Sự hỗ trợ và yêu thương của người thân',k:'charity'},
+    {t:'Phân tích tình hình và lập kế hoạch',k:'wisdom'},
+    {t:'Hành động tích cực để thay đổi hoàn cảnh',k:'courage'},
+    {t:'Nghệ thuật, âm nhạc hoặc viết lách',k:'creativity'}]},
+  {q:'Khoảng thời gian thiêng liêng nhất trong ngày với bạn là:',opts:[
+    {t:'Buổi sáng sớm trong thinh lặng với Chúa',k:'prayer'},
+    {t:'Giờ ăn cơm cùng gia đình',k:'charity'},
+    {t:'Lúc làm việc và phục vụ người khác',k:'mission'},
+    {t:'Buổi tối khi đọc và suy tư',k:'wisdom'},
+    {t:'Khi sáng tạo và được Chúa cảm hứng',k:'creativity'}]},
+  {q:'Điều bạn cầu nguyện nhiều nhất là:',opts:[
+    {t:'Xin ơn sức mạnh và bình an',k:'prayer'},
+    {t:'Cầu cho người thân và những người cần giúp',k:'charity'},
+    {t:'Xin ơn khôn ngoan trong các quyết định',k:'wisdom'},
+    {t:'Cầu cho công cuộc truyền giáo',k:'mission'},
+    {t:'Tạ ơn và ngợi khen Thiên Chúa',k:'humility'}]},
+  {q:'Điều xảy ra khi bạn cầu nguyện lâu dài:',opts:[
+    {t:'Bình an sâu xa và sự rõ ràng trong tâm trí',k:'prayer'},
+    {t:'Muốn ra đi phục vụ và yêu thương hơn',k:'charity'},
+    {t:'Được ơn sáng tỏ về một điều gì đó',k:'wisdom'},
+    {t:'Cảm thấy được sai đi sứ mạng mới',k:'mission'},
+    {t:'Muốn khiêm tốn và tự hạ thấp mình hơn',k:'humility'}]},
+  // CREATIVITY (5)
+  {q:'Cách bạn bày tỏ đức tin thường là:',opts:[
+    {t:'Qua nghệ thuật, âm nhạc hoặc viết lách',k:'creativity'},
+    {t:'Qua việc phục vụ và yêu thương người khác',k:'charity'},
+    {t:'Qua lời rao giảng và chia sẻ',k:'mission'},
+    {t:'Qua đời sống cầu nguyện và chiêm niệm',k:'prayer'},
+    {t:'Qua việc sống đơn sơ khiêm tốn',k:'humility'}]},
+  {q:'Nếu được đóng góp cho Giáo Hội bằng tài năng, bạn sẽ:',opts:[
+    {t:'Trang trí nhà thờ, sáng tác nhạc hoặc viết bài',k:'creativity'},
+    {t:'Dạy giáo lý hoặc chia sẻ đức tin',k:'wisdom'},
+    {t:'Tổ chức và lãnh đạo các hoạt động',k:'leadership'},
+    {t:'Phục vụ người nghèo và yếu thế',k:'charity'},
+    {t:'Cầu nguyện cho Giáo Hội trong thinh lặng',k:'prayer'}]},
+  {q:'Khi muốn chia sẻ một thông điệp quan trọng, bạn thường dùng:',opts:[
+    {t:'Hình ảnh, âm nhạc hoặc câu chuyện',k:'creativity'},
+    {t:'Lập luận rõ ràng và có căn cứ',k:'wisdom'},
+    {t:'Gương sống và chứng nhân cá nhân',k:'mission'},
+    {t:'Kêu gọi mọi người hành động cùng nhau',k:'leadership'},
+    {t:'Lắng nghe người khác trước rồi phản hồi',k:'peace'}]},
+  {q:'Môi trường bạn cảm thấy sáng tạo và truyền cảm hứng nhất:',opts:[
+    {t:'Trong nhà thờ hay không gian thánh thiêng',k:'creativity'},
+    {t:'Trong thiên nhiên và vũ trụ bao la',k:'prayer'},
+    {t:'Trong cuộc trò chuyện sâu sắc với người khác',k:'wisdom'},
+    {t:'Khi phục vụ và thấy người khác hạnh phúc',k:'charity'},
+    {t:'Khi đang khám phá vùng đất hay văn hóa mới',k:'mission'}]},
+  {q:'Bạn nghĩ nghệ thuật Công Giáo quan trọng vì:',opts:[
+    {t:'Là ngôn ngữ của tâm hồn để gặp Thiên Chúa',k:'creativity'},
+    {t:'Giúp rao giảng Tin Mừng đến mọi người',k:'mission'},
+    {t:'Làm đẹp và linh thiêng không gian thờ phượng',k:'prayer'},
+    {t:'Bảo tồn và truyền lại đức tin qua thế hệ',k:'wisdom'},
+    {t:'Quy tụ cộng đoàn trong niềm vui chung',k:'charity'}]},
+  // PEACE (5)
+  {q:'Khi hai người thân của bạn mâu thuẫn, bạn:',opts:[
+    {t:'Ngồi lại với cả hai để tìm giải pháp hòa giải',k:'peace'},
+    {t:'Lắng nghe từng người và giúp họ hiểu nhau',k:'charity'},
+    {t:'Đưa ra phân tích khách quan về ai đúng ai sai',k:'wisdom'},
+    {t:'Cầu nguyện cho sự hòa giải của họ',k:'prayer'},
+    {t:'Đứng về phía người bị tổn thương',k:'courage'}]},
+  {q:'Điều bạn muốn nhất sau mỗi ngày:',opts:[
+    {t:'Bình an trong tâm hồn và không có gì trăn trở',k:'peace'},
+    {t:'Biết mình đã yêu thương và giúp được người',k:'charity'},
+    {t:'Học được điều gì đó mới mẻ và sâu sắc',k:'wisdom'},
+    {t:'Cầu nguyện và cảm ơn Chúa về ngày đã qua',k:'prayer'},
+    {t:'Biết mình đã làm được gì đó có ý nghĩa',k:'mission'}]},
+  {q:'Bạn phản ứng thế nào khi ai đó chỉ trích bạn?',opts:[
+    {t:'Lắng nghe, không phòng thủ và xem có gì đúng',k:'peace'},
+    {t:'Suy nghĩ kỹ xem họ có đúng không',k:'wisdom'},
+    {t:'Tha thứ và cầu nguyện cho họ',k:'prayer'},
+    {t:'Khiêm tốn nhận lỗi nếu mình sai',k:'humility'},
+    {t:'Dũng cảm lên tiếng giải thích nếu bị hiểu sai',k:'courage'}]},
+  {q:'Điều khiến bạn cảm thấy bình an nhất là:',opts:[
+    {t:'Không có xung đột và mọi người hòa thuận',k:'peace'},
+    {t:'Được cầu nguyện và gặp gỡ Chúa',k:'prayer'},
+    {t:'Biết mình đang sống đúng sứ mạng',k:'mission'},
+    {t:'Được yêu thương và yêu thương người khác',k:'charity'},
+    {t:'Không bị ai chú ý và sống đơn giản',k:'humility'}]},
+  {q:'Trong Phúc Âm, câu nào bạn yêu thích nhất?',opts:[
+    {t:'"Phúc thay ai xây dựng hòa bình" (Mt 5,9)',k:'peace'},
+    {t:'"Yêu thương nhau như Thầy đã yêu thương" (Ga 15)',k:'charity'},
+    {t:'"Ta là đường, là sự thật và là sự sống" (Ga 14)',k:'wisdom'},
+    {t:'"Đừng sợ, Thầy ở cùng các con" (Mt 28)',k:'courage'},
+    {t:'"Hãy đi và làm cho muôn dân thành môn đệ" (Mt 28)',k:'mission'}]},
+  // HUMILITY (5)
+  {q:'Khi được khen ngợi về điều tốt bạn làm, bạn:',opts:[
+    {t:'Cảm ơn và nói đó là ơn Chúa ban',k:'humility'},
+    {t:'Khích lệ người khác cũng làm điều tương tự',k:'leadership'},
+    {t:'Tìm cách làm tốt hơn lần sau',k:'wisdom'},
+    {t:'Vui mừng vì đã giúp ích được người',k:'charity'},
+    {t:'Bình thản và tiếp tục làm việc tiếp theo',k:'peace'}]},
+  {q:'Điều bạn muốn loại bỏ nhất khỏi bản thân:',opts:[
+    {t:'Sự kiêu ngạo và cái tôi quá lớn',k:'humility'},
+    {t:'Sự sợ hãi và thiếu can đảm',k:'courage'},
+    {t:'Sự ích kỷ và thiếu quan tâm đến người khác',k:'charity'},
+    {t:'Sự thiếu kiên nhẫn và nóng giận',k:'peace'},
+    {t:'Sự lười biếng trong đức tin và cầu nguyện',k:'prayer'}]},
+  {q:'Khi làm việc tốt, bạn thích:',opts:[
+    {t:'Không cần ai biết, chỉ Chúa biết là đủ',k:'humility'},
+    {t:'Chia sẻ để truyền cảm hứng cho người khác',k:'mission'},
+    {t:'Ghi lại để nhớ và học hỏi thêm',k:'wisdom'},
+    {t:'Làm cùng người khác để cộng đoàn lớn mạnh',k:'leadership'},
+    {t:'Tiếp tục làm thêm điều tốt khác ngay',k:'charity'}]},
+  {q:'Khi bạn đúng và người khác sai, bạn thường:',opts:[
+    {t:'Nhẹ nhàng chỉ ra mà không làm họ xấu hổ',k:'humility'},
+    {t:'Phân tích rõ ràng để mọi người hiểu',k:'wisdom'},
+    {t:'Kiên nhẫn chờ thời điểm phù hợp để nói',k:'peace'},
+    {t:'Lên tiếng ngay vì sự thật quan trọng',k:'courage'},
+    {t:'Cầu nguyện để Chúa soi sáng cho họ',k:'prayer'}]},
+  {q:'Câu bạn tâm đắc nhất là:',opts:[
+    {t:'"Hãy làm nhỏ bé đi để Chúa được lớn lên"',k:'humility'},
+    {t:'"Yêu thương là ơn gọi cao cả nhất"',k:'charity'},
+    {t:'"Đức tin không có việc làm là đức tin chết"',k:'mission'},
+    {t:'"Thinh lặng là ngôn ngữ của Thiên Chúa"',k:'prayer'},
+    {t:'"Bình an tôi cho các ngươi, bình an của Thầy"',k:'peace'}]},
+  // MISSION (5)
+  {q:'Khi gặp người chưa biết Chúa, bạn:',opts:[
+    {t:'Tìm cách chia sẻ đức tin một cách tự nhiên',k:'mission'},
+    {t:'Yêu thương và phục vụ họ trước',k:'charity'},
+    {t:'Cầu nguyện cho họ và chờ đợi',k:'prayer'},
+    {t:'Kết bạn và lắng nghe câu chuyện của họ',k:'peace'},
+    {t:'Chia sẻ kiến thức về Công Giáo khi họ hỏi',k:'wisdom'}]},
+  {q:'Sứ mạng lớn nhất bạn cảm thấy Chúa trao cho bạn là:',opts:[
+    {t:'Rao giảng Tin Mừng đến người chưa biết Chúa',k:'mission'},
+    {t:'Yêu thương và phục vụ người nghèo',k:'charity'},
+    {t:'Xây dựng cộng đoàn đức tin vững mạnh',k:'leadership'},
+    {t:'Cầu nguyện và chiêm niệm cho Giáo Hội',k:'prayer'},
+    {t:'Bảo tồn và truyền lại đức tin qua nghệ thuật',k:'creativity'}]},
+  {q:'Nếu được chọn địa điểm truyền giáo, bạn chọn:',opts:[
+    {t:'Vùng xa xôi hẻo lánh chưa có Giáo Hội',k:'mission'},
+    {t:'Khu phố nghèo đô thị cần sự giúp đỡ',k:'charity'},
+    {t:'Trường học để dạy giáo lý cho thế hệ trẻ',k:'wisdom'},
+    {t:'Nơi có xung đột để mang lại hòa giải',k:'peace'},
+    {t:'Bệnh viện để an ủi và đồng hành với bệnh nhân',k:'sacrifice'}]},
+  {q:'Điều nào thôi thúc bạn muốn chia sẻ đức tin nhất?',opts:[
+    {t:'Thấy người chưa biết Thiên Chúa và tình yêu của Ngài',k:'mission'},
+    {t:'Muốn người khác được hưởng niềm vui như mình',k:'charity'},
+    {t:'Sứ mạng Chúa Giêsu trao cho mọi Kitô hữu',k:'courage'},
+    {t:'Muốn xây dựng thế giới tốt đẹp hơn',k:'leadership'},
+    {t:'Ơn Chúa ban cho mình quá lớn nên muốn chia sẻ',k:'humility'}]},
+  {q:'Nhân vật truyền giáo nào bạn ngưỡng mộ nhất kiểu sống?',opts:[
+    {t:'Ra đi đến vùng đất xa lạ không biết ngôn ngữ',k:'mission'},
+    {t:'Sống giữa người nghèo, ăn uống như họ',k:'sacrifice'},
+    {t:'Học văn hóa địa phương để hội nhập',k:'wisdom'},
+    {t:'Yêu thương và phục vụ không phân biệt',k:'charity'},
+    {t:'Dũng cảm rao giảng dù bị bách hại',k:'courage'}]},
+];
+
+// Shuffle questions for variety
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let questions = [], current = 0, answers = [], chart = null;
+const LETTERS = ['A','B','C','D','E'];
+
+// Stars
+(function(){
+  const c = document.getElementById('stars');
+  for (let i=0;i<60;i++){
+    const s = document.createElement('div'); s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*4}s`;
+    c.appendChild(s);
+  }
+})();
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  questions = shuffle(QS);
+  answers = new Array(questions.length).fill(null);
+  current = 0;
+  renderQ();
+  show('qScreen');
+}
+
+function renderQ() {
+  const q = questions[current];
+  const pct = Math.round(current/questions.length*100);
+  document.getElementById('pLabel').textContent = `Câu ${current+1} / ${questions.length}`;
+  document.getElementById('pPct').textContent = pct+'%';
+  document.getElementById('pFill').style.width = pct+'%';
+  document.getElementById('qNum').textContent = `CÂU ${String(current+1).padStart(2,'0')}`;
+  document.getElementById('qText').textContent = q.q;
+  const wrap = document.getElementById('optsWrap');
+  wrap.innerHTML = '';
+  q.opts.forEach((o,i) => {
+    const d = document.createElement('div');
+    d.className = 'opt'+(answers[current]===i?' sel':'');
+    d.innerHTML = `<div class="opt-l">${LETTERS[i]}</div><span>${o.t}</span>`;
+    d.onclick = () => pick(i);
+    wrap.appendChild(d);
+  });
+  document.getElementById('backBtn').style.display = current>0?'block':'none';
+  const nb = document.getElementById('nextBtn');
+  nb.disabled = answers[current]===null;
+  nb.textContent = current===questions.length-1 ? '🎉 Xem kết quả' : 'Tiếp theo →';
+}
+
+function pick(i) {
+  answers[current] = i;
+  document.querySelectorAll('.opt').forEach((el,idx) => el.classList.toggle('sel',idx===i));
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function next() {
+  if (answers[current]===null) return;
+  if (current<questions.length-1) { current++; renderQ(); }
+  else { show('ldScreen'); setTimeout(showResult, 2000); }
+}
+
+function prev() { if(current>0){current--;renderQ();} }
+
+// ═══════════════════════════════════════════
+// SCORING
+// ═══════════════════════════════════════════
+function calcScores() {
+  const sc = {}; TR.forEach(t=>sc[t.k]=0);
+  answers.forEach((ans,qi) => { if(ans!==null) sc[questions[qi].opts[ans].k]++; });
+  return sc;
+}
+
+function dist(userNorm, saint) {
+  let d = 0;
+  TR.forEach(t => { d += Math.pow(userNorm[t.k] - saint.scores[t.k]/5, 2); });
+  return Math.sqrt(d);
+}
+
+function findSaints(userScores) {
+  const total = Object.values(userScores).reduce((a,b)=>a+b,0)||1;
+  const norm = {}; TR.forEach(t=>norm[t.k]=userScores[t.k]/total);
+  const maxDist = Math.sqrt(TR.length); // theoretical max
+  return SAINTS.map(s => ({
+    saint: s,
+    dist: dist(norm, s),
+    pct: Math.round(Math.max(0, (1 - dist(norm,s)/maxDist) * 100))
+  })).sort((a,b)=>a.dist-b.dist);
+}
+
+// ═══════════════════════════════════════════
+// RESULT
+// ═══════════════════════════════════════════
+function showResult() {
+  const userScores = calcScores();
+  const ranked = findSaints(userScores);
+  const top = ranked[0].saint;
+  const topPct = ranked[0].pct;
+
+  // Primary card
+  document.getElementById('sEmoji').textContent = top.emoji;
+  document.getElementById('sMatch').textContent = `✨ Tương đồng ${topPct}%`;
+  document.getElementById('sName').textContent = top.name;
+  document.getElementById('sTitle').textContent = top.title;
+  document.getElementById('sQuote').textContent = top.quote;
+  document.getElementById('sDesc').textContent = top.desc;
+  document.getElementById('sTags').innerHTML = top.tags.map(t=>`<span class="s-tag">${t}</span>`).join('');
+
+  // Radar
+  const total = Object.values(userScores).reduce((a,b)=>a+b,0)||1;
+  const labels = TR.map(t=>t.l);
+  const userData = TR.map(t=>+(userScores[t.k]/total*5).toFixed(2));
+  const saintData = TR.map(t=>top.scores[t.k]);
+  if(chart) chart.destroy();
+  chart = new Chart(document.getElementById('radar').getContext('2d'), {
+    type:'radar',
+    data:{labels, datasets:[
+      {label:'Bạn', data:userData, backgroundColor:'rgba(212,160,23,.2)', borderColor:'#d4a017', borderWidth:2, pointBackgroundColor:'#d4a017', pointRadius:4},
+      {label:top.name, data:saintData, backgroundColor:'rgba(100,180,255,.08)', borderColor:'rgba(100,180,255,.5)', borderWidth:1.5, borderDash:[4,4], pointRadius:2}
+    ]},
+    options:{responsive:true,scales:{r:{min:0,max:5,ticks:{display:false},grid:{color:'rgba(255,255,255,.1)'},angleLines:{color:'rgba(255,255,255,.1)'},pointLabels:{color:'#fff',font:{size:10,weight:'600'}}}},plugins:{legend:{labels:{color:'#fff',font:{size:11}}}}}
+  });
+
+  // Bars
+  const barsEl = document.getElementById('bars');
+  barsEl.innerHTML = '';
+  [...TR].sort((a,b)=>userScores[b.k]-userScores[a.k]).forEach(t=>{
+    const p = Math.round(userScores[t.k]/total*100);
+    barsEl.innerHTML += `<div class="bar-row"><div class="bar-lbl">${t.l}</div><div class="bar-bg"><div class="bar-fill" style="width:0%" data-w="${p}%"></div></div><div class="bar-pct">${p}%</div></div>`;
+  });
+  setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w),100);
+
+  // Runners
+  const rEl = document.getElementById('runners');
+  rEl.innerHTML = '';
+  ranked.slice(1,3).forEach(r=>{
+    rEl.innerHTML += `<div class="runner"><div class="runner-emoji">${r.saint.emoji}</div><div class="runner-info"><div class="runner-name">${r.saint.name}</div><div class="runner-sub">${r.saint.title}</div></div><div class="runner-pct">${r.pct}%</div></div>`;
+  });
+
+  // Contemplation
+  document.getElementById('contemp').textContent = top.contemp;
+
+  // Card badge
+  document.getElementById('cardBadge').innerHTML = `Bạn nhận được <strong>Thẻ ${top.name}</strong>! 🎴<br>Mở app Thông Tin Công Giáo để nhận thưởng và khám phá thêm về vị Thánh này.`;
+
+  show('rScreen');
+}
+
+function share() {
+  const name = document.getElementById('sName').textContent;
+  const pct = document.getElementById('sMatch').textContent;
+  const text = `✨ Tôi vừa làm trắc nghiệm "Bạn giống Vị Thánh nào?" và kết quả là: ${name} (${pct})!\n\nBạn thử xem mình giống Thánh nào nhé 👉 App Thông Tin Công Giáo\n\n#ThôngTinCôngGiáo #TrắcNghiệmThánh`;
+  if (navigator.share) navigator.share({title:'Bạn Giống Vị Thánh Nào?', text});
+  else navigator.clipboard?.writeText(text).then(()=>alert('✅ Đã copy! Hãy dán vào Facebook/Zalo để chia sẻ.'));
+}
+
+function restart() {
+  if(chart){chart.destroy();chart=null;}
+  startQuiz();
+}
+</script>
+</body>
+</html>
