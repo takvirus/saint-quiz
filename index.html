@@ -52,38 +52,50 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(150d
 .chip{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.4);color:var(--gold2);border-radius:50px;padding:6px 16px;font-size:12px;font-weight:600;backdrop-filter:blur(4px)}
 
 /* ══════════════════════════════════════
-   QUIZ SCREEN
+   QUIZ SCREEN — cake.me style
 ══════════════════════════════════════ */
-#qScreen{justify-content:flex-start;padding-top:20px}
-.q-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;gap:11px}
-.prog-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
-.prog-bar{height:5px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;margin-top:6px}
+#qScreen{position:relative;overflow:hidden;padding:0;justify-content:flex-end;min-height:100vh}
+
+/* Full-screen crossfade backgrounds */
+.q-bg{position:absolute;inset:0;background-size:cover;background-position:center top;transition:opacity .9s ease;z-index:0}
+#qBgA{opacity:1}
+#qBgB{opacity:0}
+.q-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,.25) 0%,rgba(13,27,42,.55) 40%,rgba(13,27,42,.97) 75%,rgba(13,27,42,1) 100%)}
+
+/* Fixed top bar */
+.q-topbar{position:absolute;top:0;left:0;right:0;z-index:3;padding:16px 18px 12px;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent)}
+.prog-info{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.8);margin-bottom:8px}
+.prog-num{font-weight:700;color:var(--gold2)}
+.prog-bar{height:3px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px;transition:width .5s ease}
 
-/* Live trait meter */
-.trait-live{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:11px 14px}
-.tl-title{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;text-align:center}
+/* Scrollable content area */
+.q-content{position:relative;z-index:2;width:100%;max-width:480px;align-self:center;padding:0 16px 24px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:100vh;padding-top:80px}
+
+/* Question card */
+.q-card{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(13,20,40,.6);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:20px}
+.q-num{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.q-text{font-size:17px;font-weight:800;line-height:1.55}
+
+/* Options */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 15px;cursor:pointer;display:flex;align-items:flex-start;gap:11px;font-size:14px;line-height:1.5;transition:.18s;text-align:left;backdrop-filter:blur(8px)}
+.opt:hover{background:rgba(212,160,23,.15);border-color:rgba(212,160,23,.5);transform:translateX(4px)}
+.opt.sel{background:rgba(212,160,23,.22);border-color:var(--gold);transform:translateX(4px)}
+.opt-l{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;transition:.18s;margin-top:1px}
+.opt.sel .opt-l{background:var(--gold);color:#000}
+.q-nav{display:flex;gap:10px}
+.q-nav .btn{flex:1;padding:13px;font-size:14px}
+.btn-back{background:rgba(255,255,255,.1);color:var(--text);box-shadow:none;border:1.5px solid rgba(255,255,255,.15);backdrop-filter:blur(8px)}
+
+/* Live trait meter — compact floating pill */
+.trait-live{backdrop-filter:blur(12px);background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px 14px}
+.tl-title{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center}
 .tl-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
 .tl-lbl{font-size:10px;color:var(--muted);width:64px;flex-shrink:0;text-align:right}
 .tl-bar{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden}
 .tl-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .5s cubic-bezier(.34,1.4,.64,1)}
 .tl-val{font-size:10px;color:var(--gold2);font-weight:700;width:14px;text-align:right}
-
-.q-img-wrap{border-radius:14px;overflow:hidden;height:155px;background:rgba(255,255,255,.04)}
-.q-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s}
-.q-img.ok{opacity:1}
-.q-card{background:var(--card);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px}
-.q-num{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
-.q-text{font-size:16px;font-weight:700;line-height:1.55}
-.opts{display:flex;flex-direction:column;gap:7px}
-.opt{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.09);border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13.5px;transition:.18s;text-align:left}
-.opt:hover{background:rgba(212,160,23,.12);border-color:rgba(212,160,23,.4);transform:translateX(4px)}
-.opt.sel{background:rgba(212,160,23,.2);border-color:var(--gold);transform:translateX(4px)}
-.opt-l{width:27px;height:27px;border-radius:50%;background:rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;transition:.18s}
-.opt.sel .opt-l{background:var(--gold);color:#000}
-.q-nav{display:flex;gap:10px}
-.q-nav .btn{flex:1;padding:13px;font-size:14px}
-.btn-back{background:rgba(255,255,255,.08);color:var(--text);box-shadow:none;border:1.5px solid rgba(255,255,255,.12)}
 
 /* ══════════════════════════════════════
    LOADING
@@ -216,13 +228,15 @@ canvas#cfx{position:fixed;inset:0;pointer-events:none;z-index:999;display:none}
      QUIZ
 ══════════════════════════════════════ -->
 <div class="screen" id="qScreen">
-  <div class="q-wrap">
-    <div>
-      <div class="prog-info"><span id="pLbl">Câu 1 / 20</span><span id="pPct">0%</span></div>
-      <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
-    </div>
+  <div class="q-bg" id="qBgA"></div>
+  <div class="q-bg" id="qBgB"></div>
+  <div class="q-overlay"></div>
+  <div class="q-topbar">
+    <div class="prog-info"><span id="pLbl" class="prog-num">01 / 20</span><span id="pPct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
+  </div>
+  <div class="q-content">
     <div class="trait-live"><div class="tl-title">🔍 Hồ sơ tâm hồn</div><div id="tlBars"></div></div>
-    <div class="q-img-wrap"><img class="q-img" id="qImg" src="" onload="this.classList.add('ok')" onerror="this.closest('.q-img-wrap').style.display='none'" alt=""></div>
     <div class="q-card"><div class="q-num" id="qNum">CÂU 01</div><div class="q-text" id="qTxt"></div></div>
     <div class="opts" id="optsWrap"></div>
     <div class="q-nav">
@@ -405,145 +419,145 @@ const SAINTS=[
 // ════════════════════════════════════════════
 const QS=[
   // Q1: courage, charity, wisdom, prayer, mission
-  {q:'Khi có vấn đề khó khăn xảy ra, bạn sẽ:',img:'https://images.unsplash.com/photo-1529408686214-b48b8532f72c?w=600&q=80',opts:[
-    {t:'Lao thẳng vào giải quyết, không chần chừ',k:'courage'},
-    {t:'An ủi những người bị ảnh hưởng trước tiên',k:'charity'},
-    {t:'Lập kế hoạch cẩn thận rồi mới hành động',k:'wisdom'},
-    {t:'Cầu nguyện xin ơn soi sáng',k:'prayer'},
-    {t:'Kêu gọi cộng đoàn cùng giúp đỡ',k:'mission'}]},
+  {q:'Sáng sớm bạn thấy tin tức về một vụ thiên tai nghiêm trọng. Phản ứng đầu tiên của bạn là:',bg:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=85',opts:[
+    {t:'Lập tức kêu gọi mọi người xung quanh cùng hành động',k:'courage'},
+    {t:'Tìm cách đóng góp cụ thể — tiền, đồ dùng hoặc thời gian',k:'charity'},
+    {t:'Tìm hiểu kỹ để biết cách giúp đỡ thực sự hiệu quả',k:'wisdom'},
+    {t:'Dừng lại cầu nguyện cho các nạn nhân và người cứu hộ',k:'prayer'},
+    {t:'Chia sẻ thông tin và kêu gọi cộng đoàn Công Giáo chung tay',k:'mission'}]},
   // Q2: leadership, sacrifice, creativity, peace, humility
-  {q:'Trong nhóm dự án, vai trò tự nhiên của bạn là:',img:'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=600&q=80',opts:[
-    {t:'Người đặt ra tầm nhìn và dẫn dắt cả nhóm',k:'leadership'},
-    {t:'Người làm phần việc khó và nặng nhọc nhất',k:'sacrifice'},
-    {t:'Người sáng tạo ra ý tưởng mới mẻ',k:'creativity'},
-    {t:'Người đảm bảo không khí hòa thuận',k:'peace'},
-    {t:'Người hỗ trợ âm thầm mà không cần được ghi nhận',k:'humility'}]},
+  {q:'Nhóm bạn đang tranh cãi gay gắt về kế hoạch chung, không ai chịu ai. Bạn thường:',bg:'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?w=900&q=85',opts:[
+    {t:'Đứng ra đề xuất phương án cụ thể và dẫn dắt thảo luận',k:'leadership'},
+    {t:'Nhường ý kiến của mình dù không thích, để nhóm tiến về phía trước',k:'sacrifice'},
+    {t:'Đề xuất một ý tưởng hoàn toàn mới mà chưa ai nghĩ đến',k:'creativity'},
+    {t:'Tìm điểm chung giữa các bên để mọi người đều cảm thấy được lắng nghe',k:'peace'},
+    {t:'Lắng nghe tất cả rồi ủng hộ ý kiến hay nhất dù không phải của mình',k:'humility'}]},
   // Q3: courage, charity, leadership, wisdom, sacrifice
-  {q:'Khi thấy bất công xảy ra trước mắt, bạn:',img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',opts:[
-    {t:'Lên tiếng ngay dù có thể bị trả thù',k:'courage'},
-    {t:'Giúp đỡ nạn nhân ngay lập tức',k:'charity'},
-    {t:'Tìm người có thẩm quyền để can thiệp',k:'leadership'},
-    {t:'Phân tích để hiểu căn nguyên vấn đề',k:'wisdom'},
-    {t:'Nhận lấy thiệt thòi về mình để bảo vệ người yếu',k:'sacrifice'}]},
+  {q:'Bạn chứng kiến đồng nghiệp/bạn học bị đối xử bất công trước đám đông. Bạn:',bg:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=900&q=85',opts:[
+    {t:'Lên tiếng phản đối ngay lập tức dù có thể ảnh hưởng đến bản thân',k:'courage'},
+    {t:'Sau đó đến gặp riêng để an ủi và hỏi thăm người bị hại',k:'charity'},
+    {t:'Kêu gọi những người xung quanh cùng lên tiếng bảo vệ',k:'leadership'},
+    {t:'Tìm hiểu kỹ sự việc trước khi hành động để không làm tình huống tệ hơn',k:'wisdom'},
+    {t:'Tình nguyện nhận phần thiệt về mình để bảo vệ người đó',k:'sacrifice'}]},
   // Q4: prayer, creativity, peace, humility, mission
-  {q:'Một ngày lý tưởng với bạn là:',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',opts:[
-    {t:'Tìm nơi yên tĩnh để cầu nguyện và suy tư',k:'prayer'},
-    {t:'Viết lách, vẽ tranh hoặc sáng tác âm nhạc',k:'creativity'},
-    {t:'Giúp giải quyết mâu thuẫn giữa người thân',k:'peace'},
-    {t:'Làm việc tốt mà không cần ai biết',k:'humility'},
-    {t:'Chia sẻ đức tin với người chưa biết Chúa',k:'mission'}]},
+  {q:'Có một buổi chiều tự do hiếm hoi, không ai cần gì ở bạn. Bạn chọn:',bg:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=900&q=85',opts:[
+    {t:'Đến nhà thờ hoặc tìm nơi yên tĩnh để cầu nguyện và suy niệm',k:'prayer'},
+    {t:'Viết, vẽ, chụp ảnh hoặc làm điều gì đó sáng tạo',k:'creativity'},
+    {t:'Ra ngoài thiên nhiên, thở chậm và để tâm hồn lắng đọng',k:'peace'},
+    {t:'Âm thầm làm việc nhà hay giúp đỡ ai đó mà không cần ai biết',k:'humility'},
+    {t:'Ghé thăm người quen để chia sẻ điều tốt đẹp trong cuộc sống',k:'mission'}]},
   // Q5: courage, charity, leadership, prayer, creativity
-  {q:'Khi đức tin bị thách thức, bạn:',img:'https://images.unsplash.com/photo-1438232992991-995b671a1bf6?w=600&q=80',opts:[
-    {t:'Giữ vững lập trường dù bị chê cười',k:'courage'},
-    {t:'Yêu thương người thách thức và cầu nguyện cho họ',k:'charity'},
-    {t:'Đứng ra bảo vệ cộng đoàn đức tin',k:'leadership'},
-    {t:'Thinh lặng và tìm đến Chúa trong cầu nguyện',k:'prayer'},
-    {t:'Dùng nghệ thuật để diễn đạt đức tin của mình',k:'creativity'}]},
+  {q:'Người bạn thân tuyên bố không còn tin vào Thiên Chúa và thách thức đức tin của bạn. Bạn:',bg:'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=900&q=85',opts:[
+    {t:'Bình tĩnh chia sẻ quan điểm của mình dù biết có thể gây căng thẳng',k:'courage'},
+    {t:'Tiếp tục yêu thương và tôn trọng bạn như trước, không phán xét',k:'charity'},
+    {t:'Mời bạn tham gia sinh hoạt nhóm đức tin để tự trải nghiệm',k:'leadership'},
+    {t:'Cầu nguyện cho bạn mỗi ngày và giao phó mọi sự cho Chúa',k:'prayer'},
+    {t:'Kể câu chuyện hay chia sẻ hành trình đức tin cá nhân của mình',k:'creativity'}]},
   // Q6: wisdom, sacrifice, peace, humility, mission
-  {q:'Điều bạn muốn để lại cho thế hệ sau nhất là:',img:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',opts:[
-    {t:'Kiến thức và sự hiểu biết sâu sắc về đức tin',k:'wisdom'},
-    {t:'Gương hy sinh và sống cho người khác',k:'sacrifice'},
-    {t:'Một thế giới hòa bình và đoàn kết hơn',k:'peace'},
-    {t:'Sự khiêm tốn và đơn giản trong cuộc sống',k:'humility'},
-    {t:'Tin Mừng được loan báo đến mọi người',k:'mission'}]},
+  {q:'Bạn được nhận vào công việc mơ ước nhưng phải rời xa gia đình và cộng đoàn đức tin. Bạn:',bg:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=85',opts:[
+    {t:'Cân nhắc thật kỹ tất cả các yếu tố trước khi quyết định',k:'wisdom'},
+    {t:'Từ chối để ở lại chăm sóc cha mẹ và phục vụ cộng đoàn',k:'sacrifice'},
+    {t:'Cầu nguyện và tin Chúa sẽ chỉ đường dù bạn chọn gì',k:'peace'},
+    {t:'Xin ý kiến cha mẹ, linh mục và những người khôn ngoan trước',k:'humility'},
+    {t:'Nhận lời vì đó là cơ hội mang đức tin đến nơi mới',k:'mission'}]},
   // Q7: courage, charity, wisdom, sacrifice, humility
-  {q:'Điều bạn ngưỡng mộ nhất ở các vị Thánh là:',img:'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=600&q=80',opts:[
-    {t:'Lòng dũng cảm không sợ hãi trước nghịch cảnh',k:'courage'},
-    {t:'Tình yêu thương không giới hạn dành cho mọi người',k:'charity'},
-    {t:'Trí tuệ sâu sắc và đời sống tư duy phong phú',k:'wisdom'},
-    {t:'Sự hy sinh tuyệt vời vì đức tin và tha nhân',k:'sacrifice'},
-    {t:'Sự khiêm nhường sâu xa dù có tài năng lớn',k:'humility'}]},
+  {q:'Bạn hoàn thành dự án xuất sắc nhưng cấp trên nhầm ghi công cho người khác. Bạn:',bg:'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=900&q=85',opts:[
+    {t:'Nói thẳng sự thật một cách lịch sự và rõ ràng',k:'courage'},
+    {t:'Vui vì dự án thành công, tập trung tiếp tục công việc tốt',k:'charity'},
+    {t:'Chọn thời điểm phù hợp để làm rõ mọi việc một cách khéo léo',k:'wisdom'},
+    {t:'Im lặng chấp nhận và dâng sự hy sinh nhỏ này lên Chúa',k:'sacrifice'},
+    {t:'Cho rằng công trạng không quan trọng bằng kết quả tốt cho mọi người',k:'humility'}]},
   // Q8: leadership, prayer, creativity, peace, mission
-  {q:'Hoạt động đức tin nào bạn thích nhất?',img:'https://images.unsplash.com/photo-1545987796-200677ee1011?w=600&q=80',opts:[
-    {t:'Tổ chức và lãnh đạo các nhóm cầu nguyện',k:'leadership'},
-    {t:'Chiêm niệm và cầu nguyện trong thinh lặng',k:'prayer'},
-    {t:'Dùng nghệ thuật để phụng sự Giáo Hội',k:'creativity'},
-    {t:'Xây dựng sự hòa thuận trong cộng đoàn',k:'peace'},
-    {t:'Truyền giáo và chia sẻ Tin Mừng',k:'mission'}]},
+  {q:'Giáo xứ cần người đứng ra tổ chức buổi sinh hoạt Mùa Vọng. Bạn tham gia với vai trò:',bg:'https://images.unsplash.com/photo-1512551980832-13df02babc9e?w=900&q=85',opts:[
+    {t:'Người điều phối chính, lên kế hoạch và phân công công việc',k:'leadership'},
+    {t:'Người phụ trách giờ cầu nguyện và hướng dẫn suy niệm',k:'prayer'},
+    {t:'Người thiết kế trang trí và soạn chương trình sáng tạo',k:'creativity'},
+    {t:'Người đảm bảo mọi thành viên cảm thấy được chào đón và thoải mái',k:'peace'},
+    {t:'Người mời gọi những ai lâu không đến nhà thờ tham gia',k:'mission'}]},
   // Q9: courage, leadership, wisdom, prayer, peace
-  {q:'Khi phải đưa ra quyết định quan trọng, bạn:',img:'https://images.unsplash.com/photo-1529408686214-b48b8532f72c?w=600&q=80',opts:[
-    {t:'Quyết đoán và chịu trách nhiệm về lựa chọn của mình',k:'courage'},
-    {t:'Hỏi ý kiến nhiều người và lắng nghe',k:'leadership'},
-    {t:'Nghiên cứu kỹ lưỡng mọi khía cạnh trước',k:'wisdom'},
-    {t:'Cầu nguyện và đặt quyết định trong tay Chúa',k:'prayer'},
-    {t:'Tìm phương án ít gây xáo trộn nhất cho mọi người',k:'peace'}]},
+  {q:'Cha mẹ và anh chị em đang tranh cãi căng thẳng về chuyện gia đình quan trọng. Bạn:',bg:'https://images.unsplash.com/photo-1484665042252-4e40a2fac890?w=900&q=85',opts:[
+    {t:'Nói thẳng điều mình thấy là đúng dù cả hai bên không muốn nghe',k:'courage'},
+    {t:'Chủ động đề nghị ngồi lại và dẫn dắt cuộc đối thoại',k:'leadership'},
+    {t:'Lắng nghe từng người rồi phân tích để tìm ra vấn đề thực sự',k:'wisdom'},
+    {t:'Rút lui cầu nguyện và xin Chúa ban ơn hòa giải cho gia đình',k:'prayer'},
+    {t:'Tìm cách làm dịu không khí và đề nghị mọi người nghỉ ngơi trước',k:'peace'}]},
   // Q10: charity, sacrifice, creativity, humility, mission
-  {q:'Điều gì truyền cảm hứng cho bạn mạnh nhất?',img:'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&q=80',opts:[
-    {t:'Câu chuyện về tình yêu thương không điều kiện',k:'charity'},
-    {t:'Gương hy sinh thầm lặng của ai đó vì người khác',k:'sacrifice'},
-    {t:'Tác phẩm nghệ thuật mang chiều sâu tâm linh',k:'creativity'},
-    {t:'Tâm hồn khiêm tốn và đơn giản của các Thánh',k:'humility'},
-    {t:'Câu chuyện truyền giáo đến những vùng đất xa',k:'mission'}]},
+  {q:'Một gia đình khó khăn mới dọn đến sống gần nhà bạn. Bạn làm gì?',bg:'https://images.unsplash.com/photo-1499084732479-de2c02d45fcc?w=900&q=85',opts:[
+    {t:'Mang đồ ăn, vật dụng thiết yếu đến thăm và hỏi họ cần gì',k:'charity'},
+    {t:'Giúp họ dọn dẹp và sắp xếp nhà cửa dù mất cả ngày cuối tuần',k:'sacrifice'},
+    {t:'Tổ chức buổi chào đón vui vẻ để họ sớm cảm thấy thuộc về nơi này',k:'creativity'},
+    {t:'Giúp đỡ âm thầm mà không muốn họ biết là chính bạn',k:'humility'},
+    {t:'Mời họ đến sinh hoạt nhóm Công Giáo và giới thiệu cộng đoàn',k:'mission'}]},
   // Q11: courage, charity, leadership, sacrifice, mission
-  {q:'Nếu được sống lại thời sơ khai Giáo Hội, bạn muốn là:',img:'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&q=80',opts:[
-    {t:'Người tử đạo gan dạ không chối bỏ đức tin',k:'courage'},
-    {t:'Người chăm sóc góa phụ và trẻ mồ côi',k:'charity'},
-    {t:'Giám mục dẫn dắt Giáo Hội trong bão táp',k:'leadership'},
-    {t:'Người chia hết tài sản cho người nghèo',k:'sacrifice'},
-    {t:'Nhà truyền giáo đầu tiên đến vùng dân ngoại',k:'mission'}]},
+  {q:'Trên mạng xã hội lan truyền thông tin sai sự thật về đức tin Công Giáo. Bạn:',bg:'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=900&q=85',opts:[
+    {t:'Bình luận ngay phản bác bằng lập luận và dẫn chứng cụ thể',k:'courage'},
+    {t:'Nhắn tin riêng cho người đăng để giải thích nhẹ nhàng và chân thành',k:'charity'},
+    {t:'Viết bài phân tích có căn cứ và kêu gọi cộng đồng Công Giáo cùng phản hồi',k:'leadership'},
+    {t:'Dành nhiều giờ nghiên cứu kỹ để soạn câu trả lời chắc chắn và đáng tin',k:'sacrifice'},
+    {t:'Chia sẻ rộng rãi bài giải thích chính thống để lan tỏa sự thật',k:'mission'}]},
   // Q12: wisdom, prayer, creativity, peace, humility
-  {q:'Trong buổi cầu nguyện nhóm, bạn thường:',img:'https://images.unsplash.com/photo-1438232992991-995b671a1bf6?w=600&q=80',opts:[
-    {t:'Chia sẻ và giải thích Lời Chúa cho mọi người',k:'wisdom'},
-    {t:'Ngồi yên lặng và cầu nguyện chiêm niệm',k:'prayer'},
-    {t:'Sáng tác bài hát hay lời cầu nguyện tự phát',k:'creativity'},
-    {t:'Hòa giải khi có căng thẳng giữa các thành viên',k:'peace'},
-    {t:'Âm thầm phục vụ hậu trường, sắp xếp mọi thứ',k:'humility'}]},
+  {q:'Trước kỳ thi hoặc deadline quan trọng, bạn đang rất lo lắng. Điều đầu tiên bạn làm:',bg:'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=900&q=85',opts:[
+    {t:'Lập kế hoạch ôn tập rõ ràng theo thứ tự ưu tiên',k:'wisdom'},
+    {t:'Cầu nguyện xin Chúa ban bình an và trí tuệ',k:'prayer'},
+    {t:'Tìm phương pháp học mới lạ và hiệu quả hơn thông thường',k:'creativity'},
+    {t:'Dừng lại thở sâu, nhắc mình rằng kết quả trong tay Thiên Chúa',k:'peace'},
+    {t:'Hỏi người giỏi hơn để nhờ chỉ bảo, không ngại thừa nhận mình cần giúp',k:'humility'}]},
   // Q13: courage, wisdom, prayer, creativity, mission
-  {q:'Bạn cảm thấy gần Chúa nhất khi nào?',img:'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=600&q=80',opts:[
-    {t:'Khi vượt qua thử thách lớn bằng đức tin',k:'courage'},
-    {t:'Khi học hỏi sâu và khám phá mầu nhiệm đức tin',k:'wisdom'},
-    {t:'Khi cầu nguyện một mình trong thinh lặng',k:'prayer'},
-    {t:'Khi sáng tạo — hát, vẽ, hay viết về Chúa',k:'creativity'},
-    {t:'Khi chia sẻ Tin Mừng và thấy ai đó đón nhận',k:'mission'}]},
+  {q:'Bạn đang trải qua giai đoạn nghi ngờ đức tin — cảm thấy Chúa xa cách, cầu nguyện như vô nghĩa. Bạn:',bg:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=900&q=85',opts:[
+    {t:'Kiên trì sống đức tin dù không cảm thấy gì — đây là thử thách cần vượt qua',k:'courage'},
+    {t:'Đọc kinh nghiệm của các Thánh về "đêm tối tâm hồn" để hiểu mình đang ở đâu',k:'wisdom'},
+    {t:'Vẫn tiếp tục cầu nguyện mỗi ngày dù khô khan và mệt mỏi',k:'prayer'},
+    {t:'Dùng hội họa, âm nhạc hay thơ văn để diễn đạt cảm xúc như một dạng cầu nguyện',k:'creativity'},
+    {t:'Chia sẻ trải nghiệm với người khác — biết đâu họ cũng đang cần nghe điều này',k:'mission'}]},
   // Q14: charity, leadership, sacrifice, peace, humility
-  {q:'Điều bạn sẵn sàng từ bỏ nhất vì đức tin:',img:'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&q=80',opts:[
-    {t:'Kế hoạch riêng để phục vụ người cần giúp',k:'charity'},
-    {t:'Sự nghiệp riêng để dẫn dắt cộng đoàn',k:'leadership'},
-    {t:'Tiện nghi và sung sướng cá nhân',k:'sacrifice'},
-    {t:'Quan điểm của mình để giữ hòa khí',k:'peace'},
-    {t:'Danh tiếng và sự công nhận từ người khác',k:'humility'}]},
+  {q:'Người bạn thân đang trầm cảm nặng và từ chối gặp bất kỳ ai. Bạn:',bg:'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=900&q=85',opts:[
+    {t:'Kiên nhẫn nhắn tin mỗi ngày, không bỏ cuộc dù bạn ấy không phản hồi',k:'charity'},
+    {t:'Phối hợp với nhóm bạn chung để cùng hỗ trợ có kế hoạch cụ thể',k:'leadership'},
+    {t:'Sắp xếp lại lịch để dành nhiều thời gian hơn ở bên người bạn đó',k:'sacrifice'},
+    {t:'Đến thăm và chỉ ngồi im bên cạnh — đôi khi chỉ cần có mặt là đủ',k:'peace'},
+    {t:'Nhờ chuyên gia tâm lý hoặc linh mục tư vấn để biết cách giúp đúng hơn',k:'humility'}]},
   // Q15: courage, charity, wisdom, peace, humility
-  {q:'Khi bị khen ngợi về điều tốt bạn làm, bạn:',img:'https://images.unsplash.com/photo-1444210971048-6130cf0c46cf?w=600&q=80',opts:[
-    {t:'Dùng cơ hội này để khích lệ người khác cũng làm',k:'courage'},
-    {t:'Vui vì đã giúp ích và tiếp tục yêu thương',k:'charity'},
-    {t:'Tìm cách làm tốt hơn dựa trên phản hồi',k:'wisdom'},
-    {t:'Bình thản đón nhận và không bị xáo trộn',k:'peace'},
-    {t:'Quy mọi vinh dự về Thiên Chúa',k:'humility'}]},
+  {q:'Bạn vô tình gây ra lỗi lầm nghiêm trọng ảnh hưởng đến người khác. Bạn:',bg:'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=900&q=85',opts:[
+    {t:'Nhận trách nhiệm công khai ngay lập tức và xin lỗi chân thành',k:'courage'},
+    {t:'Tập trung vào việc sửa chữa thiệt hại cho người bị ảnh hưởng trước',k:'charity'},
+    {t:'Phân tích nguyên nhân để hiểu mình đã sai ở đâu và không lặp lại',k:'wisdom'},
+    {t:'Tha thứ cho bản thân và tiến bước, không để tội lỗi nhấn chìm',k:'peace'},
+    {t:'Lắng nghe mọi phê bình — kể cả những lời quá đáng — như bài học',k:'humility'}]},
   // Q16: leadership, sacrifice, prayer, creativity, mission
-  {q:'Nếu được đóng góp tài năng cho Giáo Hội, bạn chọn:',img:'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=600&q=80',opts:[
-    {t:'Tổ chức và xây dựng cộng đoàn đức tin',k:'leadership'},
-    {t:'Phục vụ người nghèo và yếu thế',k:'sacrifice'},
-    {t:'Cầu nguyện liên tục cho Giáo Hội',k:'prayer'},
-    {t:'Sáng tác nhạc thánh, vẽ tranh hay viết sách đạo',k:'creativity'},
-    {t:'Truyền giáo đến những nơi chưa có Tin Mừng',k:'mission'}]},
+  {q:'Giáo xứ cần người phụ trách nhóm giới trẻ đang thiếu định hướng. Bạn nhận lời và:',bg:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=85',opts:[
+    {t:'Lập kế hoạch sinh hoạt cụ thể và xây dựng cơ cấu nhóm bài bản',k:'leadership'},
+    {t:'Hy sinh nhiều buổi tối và cuối tuần để thực sự đồng hành cùng các bạn trẻ',k:'sacrifice'},
+    {t:'Bắt đầu mỗi buổi gặp bằng giờ cầu nguyện chung và hướng dẫn chiêm niệm',k:'prayer'},
+    {t:'Thiết kế các hoạt động mới lạ, hấp dẫn để giới trẻ thực sự muốn đến',k:'creativity'},
+    {t:'Tổ chức các chuyến phục vụ cộng đồng để nhóm có sứ mệnh rõ ràng',k:'mission'}]},
   // Q17: courage, leadership, wisdom, sacrifice, creativity
-  {q:'Khi Giáo Hội đối mặt với khủng hoảng, bạn:',img:'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&q=80',opts:[
-    {t:'Lên tiếng bảo vệ sự thật dù bị phản đối',k:'courage'},
-    {t:'Đứng ra dẫn dắt và tổ chức cộng đoàn vượt qua',k:'leadership'},
-    {t:'Nghiên cứu lịch sử Giáo Hội để tìm con đường',k:'wisdom'},
-    {t:'Chịu đựng trong thinh lặng và cầu nguyện',k:'sacrifice'},
-    {t:'Dùng sáng tạo để truyền đạt sứ điệp hy vọng',k:'creativity'}]},
+  {q:'Người có thẩm quyền yêu cầu bạn làm điều bạn cho là sai về mặt đạo đức. Bạn:',bg:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=85',opts:[
+    {t:'Từ chối rõ ràng và giải thích lý do dù biết có thể bị trừng phạt',k:'courage'},
+    {t:'Đề xuất phương án thay thế hợp đạo đức hơn và thuyết phục cấp trên',k:'leadership'},
+    {t:'Tham khảo ý kiến người đáng tin cậy trước khi hành động',k:'wisdom'},
+    {t:'Chịu đựng hậu quả của việc từ chối để giữ lương tâm trong sạch',k:'sacrifice'},
+    {t:'Tìm cách thực hiện yêu cầu theo hướng không vi phạm lương tâm',k:'creativity'}]},
   // Q18: charity, prayer, peace, humility, mission
-  {q:'Điều bạn muốn thay đổi nhất trong thế giới:',img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',opts:[
-    {t:'Xóa bỏ đói nghèo và bất công xã hội',k:'charity'},
-    {t:'Đưa con người trở về với đời sống tâm linh',k:'prayer'},
-    {t:'Chấm dứt chiến tranh và mang lại hòa bình',k:'peace'},
-    {t:'Xây dựng xã hội khiêm tốn hơn và ít kiêu ngạo',k:'humility'},
-    {t:'Mang Tin Mừng đến mọi người trên trái đất',k:'mission'}]},
+  {q:'Hàng xóm lớn tuổi sống một mình, ít người qua lại, trông có vẻ cô đơn. Bạn:',bg:'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?w=900&q=85',opts:[
+    {t:'Thường xuyên ghé thăm, hỏi han và giúp việc vặt cho cụ',k:'charity'},
+    {t:'Cầu nguyện cho cụ mỗi ngày và xin Chúa ban bình an',k:'prayer'},
+    {t:'Ngồi trò chuyện và lắng nghe câu chuyện cuộc đời cụ không vội vàng',k:'peace'},
+    {t:'Học hỏi sự khôn ngoan từ kinh nghiệm sống phong phú của cụ',k:'humility'},
+    {t:'Giới thiệu cụ với cộng đoàn giáo xứ để cụ không còn cô đơn',k:'mission'}]},
   // Q19: courage, charity, leadership, prayer, humility
-  {q:'Nhân vật Kinh Thánh nào gần gũi nhất với bạn?',img:'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=600&q=80',opts:[
-    {t:'Giuđitha — người phụ nữ dũng cảm cứu dân tộc',k:'courage'},
-    {t:'Ruth — lòng trung thành và yêu thương bất khuất',k:'charity'},
-    {t:'Môsê — người lãnh đạo giải phóng dân Chúa',k:'leadership'},
-    {t:'Êlia — ngôn sứ sống trong cầu nguyện và chiêm niệm',k:'prayer'},
-    {t:'Thánh Giuse — âm thầm, khiêm tốn, trung tín',k:'humility'}]},
+  {q:'Bạn và người thân đã không nói chuyện nhiều tháng vì mâu thuẫn sâu sắc. Bạn:',bg:'https://images.unsplash.com/photo-1514810685775-0d49f42a2349?w=900&q=85',opts:[
+    {t:'Chủ động liên lạc và xin lỗi trước dù chỉ sai một phần',k:'courage'},
+    {t:'Gửi món quà nhỏ hay lời nhắn thể hiện bạn vẫn quan tâm đến họ',k:'charity'},
+    {t:'Đề nghị ngồi lại nói chuyện thẳng thắn để giải quyết tận gốc vấn đề',k:'leadership'},
+    {t:'Cầu nguyện cho họ mỗi ngày và xin Chúa mềm hóa trái tim cả hai',k:'prayer'},
+    {t:'Thành thật nhìn nhận phần lỗi của mình trước khi chỉ ra lỗi người kia',k:'humility'}]},
   // Q20: wisdom, sacrifice, creativity, peace, mission
-  {q:'Sau khi qua đời, bạn muốn được nhớ đến như:',img:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80',opts:[
-    {t:'Người đã sống và chia sẻ sự khôn ngoan đức tin',k:'wisdom'},
-    {t:'Người đã hy sinh tất cả vì Chúa và tha nhân',k:'sacrifice'},
-    {t:'Người đã làm đẹp thế giới bằng tài năng sáng tạo',k:'creativity'},
-    {t:'Người đã mang lại bình an và hòa giải',k:'peace'},
-    {t:'Người đã không ngừng rao giảng Tin Mừng',k:'mission'}]},
+  {q:'Nếu biết chỉ còn một năm để sống, bạn sẽ dành thời gian đó để:',bg:'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900&q=85',opts:[
+    {t:'Viết lại những bài học quý giá và điều đã học để lại cho con cháu',k:'wisdom'},
+    {t:'Hy sinh mọi tiện nghi để phục vụ người nghèo và cô đơn hết mình',k:'sacrifice'},
+    {t:'Tạo ra tác phẩm nghệ thuật, âm nhạc hay văn chương để lại cho đời',k:'creativity'},
+    {t:'Hòa giải với mọi người và sống từng ngày trong bình an biết ơn',k:'peace'},
+    {t:'Đi khắp nơi chia sẻ đức tin và tình yêu Chúa với càng nhiều người càng tốt',k:'mission'}]},
 ];
 
 // ════════════════════════════════════════════
@@ -591,7 +605,21 @@ buildIntro();
 
 // ── Screens ──
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function startQuiz(){cur=0;answers=new Array(QS.length).fill(null);revealed=false;initTL();renderQ();show('qScreen');}
+function startQuiz(){cur=0;answers=new Array(QS.length).fill(null);revealed=false;activeBg='A';initTL();renderQ();show('qScreen');}
+
+// ── Background crossfade ──
+let activeBg='A';
+function setBg(url){
+  const next=activeBg==='A'?'B':'A';
+  const el=document.getElementById('qBg'+next);
+  el.style.backgroundImage=`url(${url})`;
+  // Force reflow then fade in
+  requestAnimationFrame(()=>{
+    document.getElementById('qBg'+activeBg).style.opacity='0';
+    el.style.opacity='1';
+    activeBg=next;
+  });
+}
 
 // ── Live Traits ──
 function initTL(){
@@ -615,15 +643,13 @@ function updateTL(){
 // ── Render Question ──
 function renderQ(){
   const q=QS[cur];
-  document.getElementById('pLbl').textContent=`Câu ${cur+1} / ${QS.length}`;
+  document.getElementById('pLbl').textContent=`${String(cur+1).padStart(2,'0')} / ${QS.length}`;
   const pct=Math.round(cur/QS.length*100);
   document.getElementById('pPct').textContent=pct+'%';
   document.getElementById('pFill').style.width=pct+'%';
   document.getElementById('qNum').textContent=`CÂU ${String(cur+1).padStart(2,'0')}`;
   document.getElementById('qTxt').textContent=q.q;
-  const imgEl=document.getElementById('qImg');
-  imgEl.classList.remove('ok');imgEl.src=q.img;
-  imgEl.closest('.q-img-wrap').style.display='';
+  setBg(q.bg);
   const wrap=document.getElementById('optsWrap');
   wrap.innerHTML=q.opts.map((o,i)=>`<button class="opt${answers[cur]===i?' sel':''}" onclick="selectOpt(${i})"><span class="opt-l">${LT[i]}</span><span>${o.t}</span></button>`).join('');
   document.getElementById('nextBtn').disabled=answers[cur]==null;
