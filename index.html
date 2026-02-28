@@ -656,17 +656,19 @@ function calcScores(){
   TR.forEach(t=>norm[t.k]=OPP[t.k]>0?sc[t.k]/OPP[t.k]:0);
   return norm;
 }
-function euclidean(a,b){
-  return Math.sqrt(TR.reduce((s,t)=>s+Math.pow((a[t.k]||0)-(b[t.k]||0),2),0));
+function cosineSim(a,b){
+  const dot=TR.reduce((s,t)=>s+(a[t.k]||0)*(b[t.k]||0),0);
+  const magA=Math.sqrt(TR.reduce((s,t)=>s+Math.pow(a[t.k]||0,2),0));
+  const magB=Math.sqrt(TR.reduce((s,t)=>s+Math.pow(b[t.k]||0,2),0));
+  return(magA&&magB)?dot/(magA*magB):0;
 }
 function findSaints(norm){
-  // Normalize saint scores to 0-1
   const scored=SAINTS.map(s=>{
     const sn={};TR.forEach(t=>sn[t.k]=(s.sc[t.k]||0)/5);
-    const dist=euclidean(norm,sn);
-    return{...s,dist,match:Math.round((1-dist/Math.sqrt(TR.length))*100)};
+    const sim=cosineSim(norm,sn);
+    return{...s,sim,match:Math.max(0,Math.round(sim*100))};
   });
-  scored.sort((a,b)=>a.dist-b.dist);
+  scored.sort((a,b)=>b.sim-a.sim);
   return scored;
 }
 
